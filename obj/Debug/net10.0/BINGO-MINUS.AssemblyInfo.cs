@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BINGO-MINUS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e426c1b79175ef87b819d7cccdfbbf7f82b8652f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d4be3c029fbac40d83f5612d8980d5e1c024065")]
 [assembly: System.Reflection.AssemblyProductAttribute("BINGO-MINUS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BINGO-MINUS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

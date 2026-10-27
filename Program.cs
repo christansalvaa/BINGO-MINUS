@@ -104,6 +104,11 @@ internal static class Program
                 minigame.Start();
                 currentScreen = Screen.Minigame;
                 break;
+            case MainMenuAction.PlayBlackjack:
+                minigame = new Blackjack(currency);
+                minigame.Start();
+                currentScreen = Screen.Minigame;
+                break;
 
             case MainMenuAction.OpenPaywall:
                 paywall.Start();
