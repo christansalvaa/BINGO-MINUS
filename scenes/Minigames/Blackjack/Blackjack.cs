@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using Raylib_cs;
 
 namespace BINGO_MINUS;
@@ -11,39 +11,40 @@ public class Blackjack : IMinigame
     public string Name => "Blackjack";
     public bool IsFinished { get; private set; }
 
-    private Deck _deck = null!;
-    private Hand _playerHand = null!;
-    private Hand _dealerHand = null!;
+    private Deck _deck = new();
+    private Hand _dealerHand = new();
+    private List<Hand> _playerHands = new();
+    private List<decimal> _playerBets = new();
     
+    private BlackjackUI _ui = new();
     private GameState _currentState;
-    private decimal _currentBet = 10m;
+    private int _currentHandIndex;
+    private decimal _currentBet;
     private string _resultMessage = "";
 
-    public Blackjack(CurrencyManager currency)
-    {
-        _currency = currency;
-    }
+    public Blackjack(CurrencyManager currency) { _currency = currency; }
 
     public void Start()
     {
         IsFinished = false;
-        _deck = new Deck();
-        _playerHand = new Hand();
-        _dealerHand = new Hand();
+        _ui.LoadAssets();
         ResetRound();
     }
 
     private void ResetRound()
     {
-        _playerHand.Clear();
+        _playerHands.Clear();
+        _playerBets.Clear();
         _dealerHand.Clear();
-        _currentState = GameState.Betting;
+        _currentHandIndex = 0;
+        _currentBet = 0;
         _resultMessage = "";
+        _currentState = GameState.Betting;
     }
 
     public void Update(float deltaTime)
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Escape))
+        if (Raylib.IsKeyPressed(KeyboardKey.Escape) || UiButton.WasClicked(BlackjackUI.BtnBack))
         {
             IsFinished = true;
             return;
@@ -51,61 +52,60 @@ public class Blackjack : IMinigame
 
         switch (_currentState)
         {
-            case GameState.Betting:
-                HandleBettingInput();
-                break;
-            case GameState.PlayerTurn:
-                HandlePlayerTurn();
-                break;
-            case GameState.DealerTurn:
-                ExecuteDealerTurn();
-                break;
+            case GameState.Betting: UpdateBettingPhase(); break;
+            case GameState.PlayerTurn: UpdatePlayerTurn(); break;
+            case GameState.DealerTurn: ExecuteDealerTurn(); break;
             case GameState.GameOver:
-                if (Raylib.IsKeyPressed(KeyboardKey.Enter) || Raylib.IsKeyPressed(KeyboardKey.Space))
-                {
-                    ResetRound();
-                }
+                if (UiButton.WasClicked(BlackjackUI.BtnPlayAgain)) ResetRound();
                 break;
         }
     }
 
-    private void HandleBettingInput()
+    private void UpdateBettingPhase()
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Up) && _currentBet + 10 <= _currency.Balance) _currentBet += 10;
-        if (Raylib.IsKeyPressed(KeyboardKey.Down) && _currentBet - 10 >= 10) _currentBet -= 10;
-
-        if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+        for (int i = 0; i < _ui.ChipValues.Length; i++)
         {
-            if (_currency.TrySpend(_currentBet))
+            if (UiButton.WasClicked(BlackjackUI.GetChipBounds(i, _ui.ChipValues.Length)) && 
+                _currentBet + _ui.ChipValues[i] <= _currency.Balance)
             {
+                _currentBet += _ui.ChipValues[i];
+            }
+        }
+
+        if (_currentBet > 0)
+        {
+            if (UiButton.WasClicked(BlackjackUI.BtnDeal) && _currency.TrySpend(_currentBet))
                 DealInitialCards();
-            }
-            else
-            {
-                _resultMessage = "Not enough coins!";
-            }
+            
+            if (UiButton.WasClicked(BlackjackUI.BtnClear))
+                _currentBet = 0;
         }
     }
 
     private void DealInitialCards()
     {
         _deck.ResetAndShuffle();
-        _playerHand.AddCard(_deck.DrawCard());
+        
+        Hand initialHand = new Hand();
+        initialHand.AddCard(_deck.DrawCard());
         _dealerHand.AddCard(_deck.DrawCard());
-        _playerHand.AddCard(_deck.DrawCard());
+        initialHand.AddCard(_deck.DrawCard());
         _dealerHand.AddCard(_deck.DrawCard());
 
-        // Check for immediate Natural Blackjack
-        if (_playerHand.GetScore() == 21)
+        _playerHands.Add(initialHand);
+        _playerBets.Add(_currentBet);
+        _currentHandIndex = 0;
+
+        if (initialHand.GetScore() == 21)
         {
             if (_dealerHand.GetScore() == 21)
             {
-                _resultMessage = "Push! Both have Blackjack.";
-                _currency.Add(_currentBet); // Refund
+                _resultMessage = "Push";
+                _currency.Add(_currentBet); 
             }
             else
             {
-                _resultMessage = "Blackjack! You win 3:2.";
+                _resultMessage = "Blackjack!";
                 _currency.Add(_currentBet + (_currentBet * 1.5m)); 
             }
             _currentState = GameState.GameOver;
@@ -116,31 +116,68 @@ public class Blackjack : IMinigame
         }
     }
 
-    private void HandlePlayerTurn()
+    private void UpdatePlayerTurn()
     {
-        // Hit
-        if (Raylib.IsKeyPressed(KeyboardKey.Space))
+        Hand currentHand = _playerHands[_currentHandIndex];
+        decimal currentHandBet = _playerBets[_currentHandIndex];
+        bool isInitialTwoCards = currentHand.Cards.Count == 2;
+
+        if (UiButton.WasClicked(BlackjackUI.BtnHit)) 
         {
-            _playerHand.AddCard(_deck.DrawCard());
-            if (_playerHand.GetScore() > 21)
+            currentHand.AddCard(_deck.DrawCard());
+            if (currentHand.GetScore() >= 21) AdvanceHand();
+        }
+        else if (UiButton.WasClicked(BlackjackUI.BtnStand)) 
+        {
+            AdvanceHand();
+        }
+        else if (isInitialTwoCards && UiButton.WasClicked(BlackjackUI.BtnDouble)) 
+        {
+            if (_currency.TrySpend(currentHandBet))
             {
-                _resultMessage = "Bust! You lose.";
-                _currentState = GameState.GameOver;
+                _playerBets[_currentHandIndex] *= 2;
+                currentHand.AddCard(_deck.DrawCard());
+                AdvanceHand();
             }
         }
-        // Stand
-        else if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+        else if (isInitialTwoCards && currentHand.Cards[0].GetValue() == currentHand.Cards[1].GetValue() && 
+                 UiButton.WasClicked(BlackjackUI.BtnSplit)) 
         {
-            _currentState = GameState.DealerTurn;
+            if (_currency.TrySpend(currentHandBet))
+            {
+                Hand splitHand = new Hand();
+                splitHand.AddCard(currentHand.Cards[1]);
+                currentHand.Cards.RemoveAt(1);
+                currentHand.AddCard(_deck.DrawCard());
+                splitHand.AddCard(_deck.DrawCard());
+
+                _playerHands.Insert(_currentHandIndex + 1, splitHand);
+                _playerBets.Insert(_currentHandIndex + 1, currentHandBet);
+
+                if (currentHand.Cards[0].Rank == Rank.Ace)
+                {
+                    AdvanceHand(); 
+                    AdvanceHand(); 
+                }
+                else if (currentHand.GetScore() >= 21) AdvanceHand();
+            }
         }
+    }
+
+    private void AdvanceHand()
+    {
+        _currentHandIndex++;
+        if (_currentHandIndex >= _playerHands.Count) _currentState = GameState.DealerTurn;
     }
 
     private void ExecuteDealerTurn()
     {
-        // Standard casino rule: Dealer must hit on 16 and stand on 17
-        while (_dealerHand.GetScore() < 17)
+        bool allBusted = true;
+        foreach (var hand in _playerHands) if (hand.GetScore() <= 21) allBusted = false;
+
+        if (!allBusted)
         {
-            _dealerHand.AddCard(_deck.DrawCard());
+            while (_dealerHand.GetScore() < 17) _dealerHand.AddCard(_deck.DrawCard());
         }
 
         DetermineWinner();
@@ -149,82 +186,65 @@ public class Blackjack : IMinigame
 
     private void DetermineWinner()
     {
-        int playerScore = _playerHand.GetScore();
         int dealerScore = _dealerHand.GetScore();
+        _resultMessage = dealerScore > 21 ? "Dealer Busts" : "Dealer Wins";
 
-        if (dealerScore > 21)
+        bool playerWonAny = false;
+        for (int i = 0; i < _playerHands.Count; i++)
         {
-            _resultMessage = "Dealer busts! You win.";
-            _currency.Add(_currentBet * 2);
-        }
-        else if (playerScore > dealerScore)
-        {
-            _resultMessage = "You win!";
-            _currency.Add(_currentBet * 2);
-        }
-        else if (playerScore < dealerScore)
-        {
-            _resultMessage = "Dealer wins.";
-        }
-        else
-        {
-            _resultMessage = "Push! It's a tie.";
-            _currency.Add(_currentBet); // Refund the bet
-        }
-    }
+            int playerScore = _playerHands[i].GetScore();
+            decimal bet = _playerBets[i];
 
-    public void Draw()
-    {
-        if (_currentState == GameState.Betting)
-        {
-            Raylib.DrawText("PLACE YOUR BET", 300, 200, 30, Color.RayWhite);
-            Raylib.DrawText($"Bet: {_currentBet:0.00}", 330, 250, 25, Color.Gold);
-            Raylib.DrawText("UP/DOWN to adjust, ENTER to deal", 220, 300, 20, Color.LightGray);
-            return;
-        }
-
-        // Draw Dealer Info
-        // Hide dealer's second card if it is the player's turn
-        bool hideDealerCard = _currentState == GameState.PlayerTurn;
-        int displayDealerScore = hideDealerCard ? _dealerHand.Cards[0].GetValue() : _dealerHand.GetScore();
-        
-        Raylib.DrawText($"Dealer Score: {displayDealerScore}", 50, 50, 20, Color.RayWhite);
-        Raylib.DrawText(_dealerHand.Cards[0].ToString(), 50, 80, 20, Color.White);
-        
-        if (hideDealerCard)
-        {
-            Raylib.DrawText("[Hidden Card]", 50, 100, 20, Color.Gray);
-        }
-        else
-        {
-            for (int i = 1; i < _dealerHand.Cards.Count; i++)
+            if (playerScore > 21) continue;
+            
+            if (dealerScore > 21 || playerScore > dealerScore)
             {
-                Raylib.DrawText(_dealerHand.Cards[i].ToString(), 50, 80 + (i * 20), 20, Color.White);
+                _currency.Add(bet * 2); 
+                playerWonAny = true;
+            }
+            else if (playerScore == dealerScore)
+            {
+                _currency.Add(bet); 
+                _resultMessage = "Push";
             }
         }
 
-        // Draw Player Info
-        Raylib.DrawText($"Player Score: {_playerHand.GetScore()}", 50, 300, 20, Color.RayWhite);
-        for (int i = 0; i < _playerHand.Cards.Count; i++)
-        {
-            Raylib.DrawText(_playerHand.Cards[i].ToString(), 50, 330 + (i * 20), 20, Color.White);
-        }
-
-        // Draw Controls and Results
-        if (_currentState == GameState.PlayerTurn)
-        {
-            Raylib.DrawText("SPACE to Hit, ENTER to Stand", 250, 500, 20, Color.LightGray);
-        }
-        else if (_currentState == GameState.GameOver)
-        {
-            Raylib.DrawText(_resultMessage, 300, 250, 30, Color.Gold);
-            Raylib.DrawText("Press ENTER to play again", 270, 500, 20, Color.LightGray);
-        }
+        if (playerWonAny) _resultMessage = "You Won";
     }
+
+    public void Draw()
+{
+    _ui.DrawBackground();
+    UiButton.Draw(BlackjackUI.BtnBack, "BACK", new Color(150, 50, 50, 255));
+    _ui.DrawBalance(_currency.Balance);
+
+    if (_currentState == GameState.Betting)
+    {
+        _ui.DrawBettingPhase(_currentBet, _currency.Balance);
+        return;
+    }
+
+    bool hideDealerCard = _currentState == GameState.PlayerTurn;
+    _ui.DrawHands(_dealerHand, _playerHands, _playerBets, hideDealerCard);
+
+    if (_currentState == GameState.PlayerTurn)
+    {
+        Hand current = _playerHands[_currentHandIndex];
+        bool firstMove = current.Cards.Count == 2;
+        bool canSplit = firstMove && current.Cards[0].GetValue() == current.Cards[1].GetValue();
+
+        _ui.DrawPlayerControls(canSplit, firstMove);
+    }
+    else if (_currentState == GameState.GameOver)
+    {
+        _ui.DrawGameOver(_resultMessage);
+    }
+}
 
     public void Stop()
     {
-        _playerHand.Clear();
+        _playerHands.Clear();
         _dealerHand.Clear();
+        _ui.UnloadAssets();
     }
 }
