@@ -21,7 +21,7 @@ public class BlackjackUI
 
     private Texture2D _table, _cardBack;
     private readonly Dictionary<int, Texture2D> _chips = new();
-    private readonly Dictionary<string, Texture2D> _cards = new(StringComparer.OrdinalIgnoreCase); // key = Card.ToString()
+    private readonly Dictionary<string, Texture2D> _cards = new(StringComparer.OrdinalIgnoreCase); 
 
     public readonly int[] ChipValues = { 1, 5, 25, 50, 100, 500, 1000, 5000 };
 
@@ -40,7 +40,6 @@ public class BlackjackUI
     public static Rectangle GetChipBounds(int i, int total) =>
         new(CenterX - total * 30 + i * 60, GameCanvas.Height - 80, 50, 50);
 
-    // ---------- Assets ----------
 
     private static Texture2D Load(string file, bool smooth = false)
     {
@@ -81,14 +80,11 @@ public class BlackjackUI
         _cards.Clear();
     }
 
-    // ---------- Drawing ----------
-
     public void DrawBackground()
     {
         int w = GameCanvas.Width, h = GameCanvas.Height;
         if (_table.Id == 0) { Raylib.ClearBackground(new Color(0, 70, 0, 255)); return; }
 
-        // "Cover" fit: scale uniformly to fill the canvas, centered, no distortion.
         float s = MathF.Max((float)w / _table.Width, (float)h / _table.Height);
         float dw = _table.Width * s, dh = _table.Height * s;
 
@@ -124,7 +120,7 @@ public class BlackjackUI
         }
     }
 
-    public void DrawHands(Hand dealer, List<Hand> hands, List<decimal> bets, bool hideDealerCard)
+    public void DrawHands(Hand dealer, List<Hand> hands, List<decimal> bets, bool hideDealerCard, int activeHandIndex)
     {
         DrawScoreBubble(CenterX, 80, hideDealerCard ? dealer.Cards[0].GetValue() : dealer.GetScore());
         DrawHandCards(dealer, CenterX, 110, hideDealerCard);
@@ -133,7 +129,20 @@ public class BlackjackUI
         for (int i = 0; i < hands.Count; i++)
         {
             int x = firstX + i * 150;
-            DrawScoreBubble(x, 310, hands[i].GetScore());
+            bool isActive = (i == activeHandIndex);
+
+            if (isActive && _cardBack.Id != 0) 
+            {
+                int n = hands[i].Cards.Count;
+                int w = CardWidth + (n - 1) * CardOverlap + 12;
+                int h = _cardBack.Height + 12;
+                Rectangle hlBounds = new Rectangle(x - w / 2, 340 - 6, w, h);
+                
+                Raylib.DrawRectangleRec(hlBounds, new Color(255, 215, 0, 25)); // Faint transparent fill
+                Raylib.DrawRectangleLinesEx(hlBounds, 2, new Color(255, 215, 0, 180)); // Crisp gold border
+            }
+
+            DrawScoreBubble(x, 310, hands[i].GetScore(), isActive);
             DrawHandCards(hands[i], x, 340, false);
             DrawCentered($"Bet: {bets[i]}", x, 460, 16, Color.Gold);
             DrawTex(_chips[5], x - 25, 480, Color.White);
@@ -159,6 +168,8 @@ public class BlackjackUI
     private void DrawHandCards(Hand hand, int centerX, int y, bool hideSecond)
     {
         int n = hand.Cards.Count;
+        if (n == 0) return;
+        
         int x = centerX - (CardWidth + (n - 1) * CardOverlap) / 2;
 
         for (int i = 0; i < n; i++)
@@ -173,10 +184,14 @@ public class BlackjackUI
         if (tex.Id != 0) Raylib.DrawTexture(tex, x, y, tint);
     }
 
-    private static void DrawScoreBubble(int cx, int y, int score)
+    private static void DrawScoreBubble(int cx, int y, int score, bool isActive = false)
     {
-        Raylib.DrawCircle(cx, y, 18, new Color(30, 40, 30, 220));
-        Raylib.DrawCircleLines(cx, y, 18, new Color(200, 180, 100, 255));
+        Color bgColor = isActive ? new Color(50, 60, 40, 255) : new Color(30, 40, 30, 220);
+        Color borderColor = isActive ? Color.Gold : new Color(200, 180, 100, 255);
+        
+        Raylib.DrawCircle(cx, y, 18, bgColor);
+        Raylib.DrawCircleLines(cx, y, 18, borderColor);
+        
         string s = score.ToString();
         Raylib.DrawText(s, cx - Raylib.MeasureText(s, 18) / 2, y - 9, 18, Color.RayWhite);
     }

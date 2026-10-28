@@ -213,33 +213,35 @@ public class Blackjack : IMinigame
     }
 
     public void Draw()
-{
-    _ui.DrawBackground();
-    UiButton.Draw(BlackjackUI.BtnBack, "BACK", new Color(150, 50, 50, 255));
-    _ui.DrawBalance(_currency.Balance);
-
-    if (_currentState == GameState.Betting)
     {
-        _ui.DrawBettingPhase(_currentBet, _currency.Balance);
-        return;
-    }
+        _ui.DrawBackground();
+        UiButton.Draw(BlackjackUI.BtnBack, "BACK", new Color(150, 50, 50, 255));
+        _ui.DrawBalance(_currency.Balance);
 
-    bool hideDealerCard = _currentState == GameState.PlayerTurn;
-    _ui.DrawHands(_dealerHand, _playerHands, _playerBets, hideDealerCard);
+        if (_currentState == GameState.Betting)
+        {
+            _ui.DrawBettingPhase(_currentBet, _currency.Balance);
+            return;
+        }
 
-    if (_currentState == GameState.PlayerTurn)
-    {
-        Hand current = _playerHands[_currentHandIndex];
-        bool firstMove = current.Cards.Count == 2;
-        bool canSplit = firstMove && current.Cards[0].GetValue() == current.Cards[1].GetValue();
+        bool isPlayerTurn = _currentState == GameState.PlayerTurn;
+        
+        int activeIndex = isPlayerTurn ? _currentHandIndex : -1;
+        _ui.DrawHands(_dealerHand, _playerHands, _playerBets, isPlayerTurn, activeIndex);
 
-        _ui.DrawPlayerControls(canSplit, firstMove);
+        if (isPlayerTurn)
+        {
+            Hand current = _playerHands[_currentHandIndex];
+            bool firstMove = current.Cards.Count == 2;
+            bool canSplit = firstMove && current.Cards[0].GetValue() == current.Cards[1].GetValue();
+
+            _ui.DrawPlayerControls(canSplit, firstMove);
+        }
+        else if (_currentState == GameState.GameOver)
+        {
+            _ui.DrawGameOver(_resultMessage);
+        }
     }
-    else if (_currentState == GameState.GameOver)
-    {
-        _ui.DrawGameOver(_resultMessage);
-    }
-}
 
     public void Stop()
     {
@@ -248,4 +250,3 @@ public class Blackjack : IMinigame
         _ui.UnloadAssets();
     }
 }
-//a
