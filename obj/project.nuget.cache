@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "AKPdebKyp/8=",
+  "dgSpecHash": "VLsLurevbVI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\thela\\Documents\\_Github_Repositories\\BINGO-MINUS\\BINGO-MINUS.csproj",
+  "projectFilePath": "E:\\HDD\\JAIREN\\4th year college wowiwowow\\ADVANCE PROG\\BINGO-MINUS\\BINGO-MINUS.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\thela\\.nuget\\packages\\raylib-cs\\8.1.0\\raylib-cs.8.1.0.nupkg.sha512"
+    "C:\\Users\\Admin\\.nuget\\packages\\raylib-cs\\8.1.0\\raylib-cs.8.1.0.nupkg.sha512"
   ],
   "logs": []
 }

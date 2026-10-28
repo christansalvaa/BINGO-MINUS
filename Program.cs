@@ -24,10 +24,19 @@ internal static class Program
         Raylib.InitWindow(screenWidth, screenHeight, "BINGO MINUS");
         Raylib.SetTargetFPS(60);
 
+        // 1. THIS STOPS THE GAME FROM CLOSING WHEN YOU PRESS ESCAPE
+        Raylib.SetExitKey(KeyboardKey.Null);
+
         try
         {
             while (!Raylib.WindowShouldClose())
             {
+                // 2. F11 TOGGLE FOR WINDOWED / FULLSCREEN MODE
+                if (Raylib.IsKeyPressed(KeyboardKey.F11))
+                {
+                    Raylib.ToggleFullscreen();
+                }
+
                 float deltaTime = Raylib.GetFrameTime();
 
                 switch (currentScreen)
@@ -101,6 +110,12 @@ internal static class Program
 
             case MainMenuAction.PlaySlots:
                 minigame = new SlotsMinigame(currency);
+                minigame.Start();
+                currentScreen = Screen.Minigame;
+                break;
+                
+            case MainMenuAction.PlayBlackjack:
+                minigame = new Blackjack(currency);
                 minigame.Start();
                 currentScreen = Screen.Minigame;
                 break;

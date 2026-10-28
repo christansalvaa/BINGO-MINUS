@@ -78,19 +78,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\thela\\.nuget\\packages\\": {}
+    "C:\\Users\\Admin\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\thela\\Documents\\_Github_Repositories\\BINGO-MINUS\\BINGO-MINUS.csproj",
+      "projectUniqueName": "E:\\HDD\\JAIREN\\4th year college wowiwowow\\ADVANCE PROG\\BINGO-MINUS\\BINGO-MINUS.csproj",
       "projectName": "BINGO-MINUS",
-      "projectPath": "C:\\Users\\thela\\Documents\\_Github_Repositories\\BINGO-MINUS\\BINGO-MINUS.csproj",
-      "packagesPath": "C:\\Users\\thela\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\thela\\Documents\\_Github_Repositories\\BINGO-MINUS\\obj\\",
+      "projectPath": "E:\\HDD\\JAIREN\\4th year college wowiwowow\\ADVANCE PROG\\BINGO-MINUS\\BINGO-MINUS.csproj",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "outputPath": "E:\\HDD\\JAIREN\\4th year college wowiwowow\\ADVANCE PROG\\BINGO-MINUS\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\thela\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -143,7 +143,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.400/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
