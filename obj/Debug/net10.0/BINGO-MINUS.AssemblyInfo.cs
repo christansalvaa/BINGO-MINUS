@@ -13,7 +13,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BINGO-MINUS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< Updated upstream
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e35300ce922880d106ba0fb02145bfc953492a2b")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0a82c7711bb9d1f34c658c3e60f421fd67419105")]
+>>>>>>> Stashed changes
 [assembly: System.Reflection.AssemblyProductAttribute("BINGO-MINUS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BINGO-MINUS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

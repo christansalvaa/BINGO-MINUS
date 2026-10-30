@@ -120,6 +120,12 @@ internal static class Program
                 currentScreen = Screen.Minigame;
                 break;
 
+            case MainMenuAction.PlayCrossroads:
+                minigame = new Crossyroad(currency);
+                minigame.Start();
+                currentScreen = Screen.Minigame;
+                break;
+
             case MainMenuAction.OpenPaywall:
                 paywall.Start();
                 currentScreen = Screen.Paywall;
