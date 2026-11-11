@@ -28,7 +28,7 @@ public class BlackjackUI
     public static int CenterX => GameCanvas.Width / 2;
     public static int BtnY => GameCanvas.Height - 70;
 
-    public static Rectangle BtnBack => new(20, 20, 100, 40);
+    public static Rectangle BtnBack => new(20, 11, 130, 40);
     public static Rectangle BtnDeal => new(CenterX - 105, GameCanvas.Height - 160, 100, 50);
     public static Rectangle BtnClear => new(CenterX + 5, GameCanvas.Height - 160, 100, 50);
     public static Rectangle BtnStand => new(CenterX - 160, BtnY, 100, 50);

@@ -9,23 +9,24 @@ internal static class Program
 {
     private static void Main()
     {
-        var currency = new CurrencyManager(startingBalance: 100m);
-        var mainMenu = new MainMenuScene(currency);
-        var paywall = new PaywallScene(currency);
-
-        IMinigame? minigame = null;
-        Screen currentScreen = Screen.MainMenu;
-
         int monitor = Raylib.GetCurrentMonitor();
         int screenWidth = Raylib.GetMonitorWidth(monitor);
         int screenHeight = Raylib.GetMonitorHeight(monitor);
 
         Raylib.SetConfigFlags(ConfigFlags.FullscreenMode);
         Raylib.InitWindow(screenWidth, screenHeight, "BINGO MINUS");
+        Raylib.InitAudioDevice();
         Raylib.SetTargetFPS(60);
 
         // 1. THIS STOPS THE GAME FROM CLOSING WHEN YOU PRESS ESCAPE
         Raylib.SetExitKey(KeyboardKey.Null);
+
+        var currency = new CurrencyManager(startingBalance: 100m);
+        var mainMenu = new MainMenuScene(currency);
+        var paywall = new PaywallScene(currency);
+
+        IMinigame? minigame = null;
+        Screen currentScreen = Screen.MainMenu;
 
         try
         {
@@ -58,15 +59,25 @@ internal static class Program
 
                         if (minigame.IsFinished)
                         {
+                            bool goToDeposit = (minigame as CrashMinigame)?.WantsDeposit == true || (minigame as SlotsMinigame)?.WantsDeposit == true;
                             minigame.Stop();
                             minigame = null;
-                            currentScreen = Screen.MainMenu;
+
+                            if (goToDeposit)
+                            {
+                                paywall.Start();
+                                currentScreen = Screen.Paywall;
+                            }
+                            else
+                            {
+                                currentScreen = Screen.MainMenu;
+                            }
                         }
                         break;
                 }
 
                 Raylib.BeginDrawing();
-                Raylib.ClearBackground(new Color(18, 22, 31, 255));
+                Raylib.ClearBackground(new Color(14, 19, 34, 255));
                 GameCanvas.Begin();
 
                 switch (currentScreen)
@@ -89,6 +100,12 @@ internal static class Program
         finally
         {
             minigame?.Stop();
+            UiFont.Unload();
+            UiImageButton.UnloadAll();
+            if (Raylib.IsAudioDeviceReady())
+            {
+                Raylib.CloseAudioDevice();
+            }
             Raylib.CloseWindow();
         }
     }

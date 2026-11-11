@@ -31,7 +31,7 @@ public class CrossyroadUI
     public static int CenterX => GameCanvas.Width / 2;
 
     // Top buttons
-    public static Rectangle BtnBack => new(20, 20, 100, 40);
+    public static Rectangle BtnBack => new(20, 11, 130, 40);
 
     // Betting phase buttons
     public static Rectangle BtnEasy => new(CenterX - 165, 442, 100, 32);

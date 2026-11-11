@@ -203,7 +203,10 @@ public class Crossyroad : IMinigame
     public void Draw()
     {
         _ui.DrawBackground();
-        CrossyroadUI.DrawTopBar(_currency.Balance);
+        if (BingoPlusHeader.Draw("CROSSROADS", _currency))
+        {
+            IsFinished = true;
+        }
         _ui.DrawRoadGrid(TotalLanes, _currentLane, _crashedLane, _difficulty);
 
         switch (_currentState)

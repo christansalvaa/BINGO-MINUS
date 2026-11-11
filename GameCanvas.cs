@@ -8,8 +8,8 @@ namespace BINGO_MINUS;
 
 internal static class GameCanvas
 {
-    public const int Width = 960;
-    public const int Height = 640;
+    public const int Width = 1280;
+    public const int Height = 720;
 
     public static void Begin()
     {

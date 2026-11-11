@@ -215,8 +215,10 @@ public class Blackjack : IMinigame
     public void Draw()
     {
         _ui.DrawBackground();
-        UiButton.Draw(BlackjackUI.BtnBack, "BACK", new Color(150, 50, 50, 255));
-        _ui.DrawBalance(_currency.Balance);
+        if (BingoPlusHeader.Draw("BLACKJACK 21", _currency))
+        {
+            IsFinished = true;
+        }
 
         if (_currentState == GameState.Betting)
         {

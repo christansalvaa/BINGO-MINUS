@@ -9,7 +9,7 @@ internal static class UiButton
 {
     public static void Draw(Rectangle bounds, string label, Color fillColor)
     {
-        Vector2 mousePosition = Raylib.GetMousePosition();
+        Vector2 mousePosition = GameCanvas.GetMousePosition();
         bool isHovered = Raylib.CheckCollisionPointRec(mousePosition, bounds);
 
         Color color = isHovered
