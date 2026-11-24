@@ -59,7 +59,10 @@ internal static class Program
 
                         if (minigame.IsFinished)
                         {
-                            bool goToDeposit = (minigame as CrashMinigame)?.WantsDeposit == true || (minigame as SlotsMinigame)?.WantsDeposit == true;
+                            // New minigames only need to implement IDepositRequester; Crash and Slots keep their existing checks.
+                            bool goToDeposit = (minigame as IDepositRequester)?.WantsDeposit == true
+                                || (minigame as CrashMinigame)?.WantsDeposit == true
+                                || (minigame as SlotsMinigame)?.WantsDeposit == true;
                             minigame.Stop();
                             minigame = null;
 
@@ -139,6 +142,18 @@ internal static class Program
 
             case MainMenuAction.PlayCrossroads:
                 minigame = new Crossyroad(currency);
+                minigame.Start();
+                currentScreen = Screen.Minigame;
+                break;
+
+            case MainMenuAction.PlayRoulette:
+                minigame = new RouletteMinigame(currency);
+                minigame.Start();
+                currentScreen = Screen.Minigame;
+                break;
+
+            case MainMenuAction.PlayColorGame:
+                minigame = new ColorGameMinigame(currency);
                 minigame.Start();
                 currentScreen = Screen.Minigame;
                 break;
