@@ -12,7 +12,9 @@ internal enum MainMenuAction
     PlaySlots,
     OpenPaywall,
     PlayBlackjack,
-    PlayCrossroads
+    PlayCrossroads,
+    PlayPlinko,
+    PlayBaccarat
 }
 
 internal sealed record GameRegistryItem(
@@ -77,6 +79,22 @@ internal sealed class MainMenuScene
             "NEW",
             "Multiplier Highway"
         ),
+        new(
+            MainMenuAction.PlayPlinko,
+            "PLINKO",
+            "ARCADE",
+            "scenes/UI/Assets/card_plinko.png",
+            "HOT",
+            "Drop & Win 1000x"
+        ),
+        new(
+            MainMenuAction.PlayBaccarat,
+            "BACCARAT",
+            "TABLE",
+            "scenes/UI/Assets/card_baccarat.png",
+            "VIP",
+            "Player vs Banker"
+        ),
     ];
 
     public MainMenuScene(CurrencyManager currency)
@@ -102,15 +120,27 @@ internal sealed class MainMenuScene
 
     public MainMenuAction Update()
     {
-        // 1. Mouse wheel scrolling
+        // 1. Mouse wheel & keyboard scrolling
         float wheel = Raylib.GetMouseWheelMove();
         if (Math.Abs(wheel) > 0.01f)
         {
-            _targetScrollY += wheel * 60f;
+            _targetScrollY += wheel * 75f;
+        }
+        if (Raylib.IsKeyPressed(KeyboardKey.Down) || Raylib.IsKeyPressed(KeyboardKey.PageDown))
+        {
+            _targetScrollY -= 180f;
+        }
+        if (Raylib.IsKeyPressed(KeyboardKey.Up) || Raylib.IsKeyPressed(KeyboardKey.PageUp))
+        {
+            _targetScrollY += 180f;
         }
 
-        // Clamp scroll
-        float maxScroll = Math.Max(0, (GetFilteredGames().Count + 3) / 4 * 340f - 360f);
+        // Clamp scroll to exact content height
+        var visibleGamesForScroll = GetFilteredGames();
+        int totalRows = (visibleGamesForScroll.Count + 3) / 4;
+        float contentHeight = totalRows * 325f + Math.Max(0, totalRows - 1) * 24f;
+        float visibleHeight = GameCanvas.Height - 28f - 310f - 16f;
+        float maxScroll = Math.Max(0f, contentHeight - visibleHeight);
         _targetScrollY = Math.Clamp(_targetScrollY, -maxScroll, 0f);
         _scrollY += (_targetScrollY - _scrollY) * 0.2f;
 
@@ -147,6 +177,9 @@ internal sealed class MainMenuScene
         float startX = (GameCanvas.Width - (cols * cardW + (cols - 1) * gapX)) / 2f;
         float startY = 310 + _scrollY;
 
+        Vector2 mousePos = GameCanvas.GetMousePosition();
+        bool mouseInCardViewport = mousePos.Y >= 300f && mousePos.Y <= GameCanvas.Height - 28f;
+
         for (int i = 0; i < visibleGames.Count; i++)
         {
             var game = visibleGames[i];
@@ -157,8 +190,8 @@ internal sealed class MainMenuScene
             float y = startY + row * (cardH + gapY);
             Rectangle cardRect = new(x, y, cardW, cardH);
 
-            // Check if card is visible within screen vertical bounds
-            if (y + cardH >= 70 && y <= GameCanvas.Height)
+            // Check if card is visible within the scrollable grid viewport
+            if (mouseInCardViewport && y + cardH >= 300f && y <= GameCanvas.Height - 28f)
             {
                 if (UiImageButton.WasClicked(cardRect))
                 {
@@ -174,7 +207,7 @@ internal sealed class MainMenuScene
     {
         string selectedCat = Categories[_selectedCategoryIndex];
         if (selectedCat == "ALL GAMES") return Games;
-        if (selectedCat == "HOT") return Games.FindAll(g => g.Badge == "HOT" || g.Badge == "TOP");
+        if (selectedCat == "HOT") return Games.FindAll(g => g.Badge == "HOT" || g.Badge == "TOP" || g.Badge == "VIP");
         return Games.FindAll(g => g.Category.Equals(selectedCat, StringComparison.OrdinalIgnoreCase));
     }
 
@@ -219,7 +252,25 @@ internal sealed class MainMenuScene
             }
         }
 
+        // Subtle scrollbar indicator when lobby has multiple rows
+        int totalRowsDraw = (visibleGames.Count + cols - 1) / cols;
+        float contentHeightDraw = totalRowsDraw * cardH + Math.Max(0, totalRowsDraw - 1) * gapY;
+        float viewportHeightDraw = GameCanvas.Height - 28f - 310f - 16f;
+        float maxScrollDraw = Math.Max(0f, contentHeightDraw - viewportHeightDraw);
+        if (maxScrollDraw > 1f)
+        {
+            float trackY = 308f;
+            float trackH = GameCanvas.Height - 28f - trackY - 10f;
+            Raylib.DrawRectangleRounded(new Rectangle(GameCanvas.Width - 14, trackY, 6, trackH), 0.5f, 4, new Color(255, 255, 255, 20));
+            float thumbH = Math.Max(42f, trackH * (viewportHeightDraw / contentHeightDraw));
+            float scrollRatio = Math.Clamp(-_scrollY / maxScrollDraw, 0f, 1f);
+            float thumbY = trackY + scrollRatio * (trackH - thumbH);
+            Raylib.DrawRectangleRounded(new Rectangle(GameCanvas.Width - 14, thumbY, 6, thumbH), 0.5f, 4, new Color(255, 195, 0, 180));
+        }
+
         // --- HERO BANNER & CATEGORY BAR (Pinned under Header) ---
+        // Solid backdrop behind hero banner so scrolled cards tuck cleanly beneath it
+        Raylib.DrawRectangle(0, 70, GameCanvas.Width, 185, new Color(14, 19, 34, 255));
         // Top Hero Banner
         Rectangle bannerRect = new(30, 80, 1220, 165);
         UiImageButton.Draw(_banner, bannerRect, enabled: false);

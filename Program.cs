@@ -59,7 +59,10 @@ internal static class Program
 
                         if (minigame.IsFinished)
                         {
-                            bool goToDeposit = (minigame as CrashMinigame)?.WantsDeposit == true || (minigame as SlotsMinigame)?.WantsDeposit == true;
+                            bool goToDeposit = (minigame as CrashMinigame)?.WantsDeposit == true
+                                || (minigame as SlotsMinigame)?.WantsDeposit == true
+                                || (minigame as PlinkoMinigame)?.WantsDeposit == true
+                                || (minigame as BaccaratMinigame)?.WantsDeposit == true;
                             minigame.Stop();
                             minigame = null;
 
@@ -139,6 +142,18 @@ internal static class Program
 
             case MainMenuAction.PlayCrossroads:
                 minigame = new Crossyroad(currency);
+                minigame.Start();
+                currentScreen = Screen.Minigame;
+                break;
+
+            case MainMenuAction.PlayPlinko:
+                minigame = new PlinkoMinigame(currency);
+                minigame.Start();
+                currentScreen = Screen.Minigame;
+                break;
+
+            case MainMenuAction.PlayBaccarat:
+                minigame = new BaccaratMinigame(currency);
                 minigame.Start();
                 currentScreen = Screen.Minigame;
                 break;
