@@ -32,7 +32,7 @@ public sealed class SlotCell
     public bool IsEmpty;
 }
 
-public sealed class SlotsMinigame : IMinigame
+public sealed class SlotsMinigame : IMinigame, IDepositRequester
 {
     public const int Cols = 6;
     public const int Rows = 5;

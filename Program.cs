@@ -33,9 +33,7 @@ internal static class Program
             {
                 activeGame.Update(dt);
 
-                bool wantsDeposit =
-                    (activeGame is CrashMinigame crash && crash.WantsDeposit) ||
-                    (activeGame is SlotsMinigame slots && slots.WantsDeposit);
+                bool wantsDeposit = activeGame is IDepositRequester deposit && deposit.WantsDeposit;
 
                 if (wantsDeposit)
                 {
@@ -59,33 +57,16 @@ internal static class Program
             }
             else
             {
-                MainMenuAction action = mainMenu.Update();
-                switch (action)
+                MainMenuResult result = mainMenu.Update();
+                if (result.OpenPaywall)
                 {
-                    case MainMenuAction.PlayCrash:
-                        activeGame = new CrashMinigame(currency);
-                        activeGame.Start();
-                        break;
-                    case MainMenuAction.PlaySlots:
-                        activeGame = new SlotsMinigame(currency);
-                        activeGame.Start();
-                        break;
-                    case MainMenuAction.PlayBlackjack:
-                        activeGame = new Blackjack(currency);
-                        activeGame.Start();
-                        break;
-                    case MainMenuAction.PlayCrossroads:
-                        activeGame = new Crossyroad(currency);
-                        activeGame.Start();
-                        break;
-                    case MainMenuAction.PlayMines:
-                        activeGame = new MinesMinigame(currency);
-                        activeGame.Start();
-                        break;
-                    case MainMenuAction.OpenPaywall:
-                        inPaywall = true;
-                        paywall.Start();
-                        break;
+                    inPaywall = true;
+                    paywall.Start();
+                }
+                else if (result.Game != null)
+                {
+                    activeGame = result.Game;
+                    activeGame.Start();
                 }
             }
 

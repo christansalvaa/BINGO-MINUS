@@ -5,87 +5,44 @@ using Raylib_cs;
 
 namespace BINGO_MINUS;
 
-internal enum MainMenuAction
-{
-    None,
-    PlayCrash,
-    PlaySlots,
-    OpenPaywall,
-    PlayBlackjack,
-    PlayCrossroads,
-    PlayMines
-}
+internal readonly record struct MainMenuResult(IMinigame? Game = null, bool OpenPaywall = false);
 
 internal sealed record GameRegistryItem(
-    MainMenuAction Action,
-    string Title,
-    string Category,
     string AssetPath,
-    string Badge,
-    string Subtitle
+    Func<CurrencyManager, IMinigame> CreateGame
 );
 
 internal sealed class MainMenuScene
 {
+    private const float HeaderHeight = 70f;
+    private const float FooterHeight = 28f;
+    private const float GridStartY = 265f;
+    private const int Columns = 4;
+    private const float CardWidth = 270f;
+    private const float CardHeight = 325f;
+    private const float GapX = 26f;
+    private const float GapY = 24f;
+
     private readonly CurrencyManager _currency;
 
-    // Assets
     private Texture2D _logo;
     private Texture2D _banner;
     private Texture2D _btnDeposit;
     private readonly Dictionary<string, Texture2D> _cardTextures = new(StringComparer.OrdinalIgnoreCase);
 
-    // Categories
-    private static readonly string[] Categories = ["ALL GAMES", "HOT", "SLOTS", "TABLE", "ARCADE"];
-    private int _selectedCategoryIndex = 0;
+    private float _scrollY;
+    private float _targetScrollY;
 
-    // Scrolling
-    private float _scrollY = 0f;
-    private float _targetScrollY = 0f;
-
-    // Game Registry: easy to add new minigames by adding a single line here!
+    // Game Registry: add a new minigame in a single line here.
     private static readonly List<GameRegistryItem> Games =
     [
-        new(
-            MainMenuAction.PlayCrash,
-            "AVIATOR CRASH",
-            "ARCADE",
-            "scenes/UI/Assets/card_crash.png",
-            "HOT",
-            "Aviator Multiplier"
-        ),
-        new(
-            MainMenuAction.PlaySlots,
-            "MEGA SLOTS",
-            "SLOTS",
-            "scenes/UI/Assets/card_slots.png",
-            "JACKPOT",
-            "Spin 777 Reels"
-        ),
-        new(
-            MainMenuAction.PlayBlackjack,
-            "BLACKJACK 21",
-            "TABLE",
-            "scenes/UI/Assets/card_blackjack.png",
-            "TOP",
-            "Beat the Dealer"
-        ),
-        new(
-            MainMenuAction.PlayCrossroads,
-            "CROSSROADS",
-            "ARCADE",
-            "scenes/UI/Assets/card_crossyroad.png",
-            "NEW",
-            "Multiplier Highway"
-        ),
-        new(
-            MainMenuAction.PlayMines,
-            "MINES",
-            "ARCADE",
-            "scenes/UI/Assets/card_mines.png",
-            "NEW",
-            "Gems & Bombs"
-        ),
+        new("scenes/UI/Assets/card_crash.png",      c => new CrashMinigame(c)),
+        new("scenes/UI/Assets/card_slots.png",      c => new SlotsMinigame(c)),
+        new("scenes/UI/Assets/card_blackjack.png",  c => new Blackjack(c)),
+        new("scenes/UI/Assets/card_crossyroad.png", c => new Crossyroad(c)),
+        new("scenes/UI/Assets/card_mines.png",      c => new MinesMinigame(c)),
+        new("scenes/UI/Assets/card_roulette.png",   c => new RouletteMinigame(c)),
+        new("scenes/UI/Assets/card_colorgame.png",  c => new ColorGameMinigame(c)),
     ];
 
     public MainMenuScene(CurrencyManager currency)
@@ -109,168 +66,73 @@ internal sealed class MainMenuScene
         }
     }
 
-    public MainMenuAction Update()
+    public MainMenuResult Update()
     {
-        // 1. Mouse wheel scrolling
         float wheel = Raylib.GetMouseWheelMove();
         if (Math.Abs(wheel) > 0.01f)
         {
             _targetScrollY += wheel * 60f;
         }
 
-        // Clamp scroll
-        float maxScroll = Math.Max(0, (GetFilteredGames().Count + 3) / 4 * 340f - 360f);
+        int rows = (Games.Count + Columns - 1) / Columns;
+        float contentBottom = GridStartY + rows * CardHeight + Math.Max(0, rows - 1) * GapY + 20f;
+        float maxScroll = Math.Max(0f, contentBottom - (GameCanvas.Height - FooterHeight));
         _targetScrollY = Math.Clamp(_targetScrollY, -maxScroll, 0f);
         _scrollY += (_targetScrollY - _scrollY) * 0.2f;
 
-        // 2. Deposit / Get Coins button
         Rectangle depositBounds = new(1080, 14, 170, 44);
         if (UiImageButton.WasClicked(depositBounds))
         {
-            return MainMenuAction.OpenPaywall;
+            return new MainMenuResult(OpenPaywall: true);
         }
 
-        // 3. Category tabs
-        float tabX = 40;
-        float tabY = 262;
-        for (int i = 0; i < Categories.Length; i++)
+        Vector2 mouse = GameCanvas.GetMousePosition();
+        if (mouse.Y >= HeaderHeight && mouse.Y <= GameCanvas.Height - FooterHeight)
         {
-            int textWidth = (int)UiFont.MeasureText(Categories[i], 15, isBold: true).X;
-            Rectangle tabRect = new(tabX, tabY, textWidth + 24, 32);
-            if (UiImageButton.WasClicked(tabRect))
+            for (int i = 0; i < Games.Count; i++)
             {
-                _selectedCategoryIndex = i;
-                _targetScrollY = 0f;
-                _scrollY = 0f;
-            }
-            tabX += textWidth + 34;
-        }
-
-        // 4. Clickable Game Cards
-        var visibleGames = GetFilteredGames();
-        const int cols = 4;
-        const float cardW = 270;
-        const float cardH = 325;
-        const float gapX = 26;
-        const float gapY = 24;
-        float startX = (GameCanvas.Width - (cols * cardW + (cols - 1) * gapX)) / 2f;
-        float startY = 310 + _scrollY;
-
-        for (int i = 0; i < visibleGames.Count; i++)
-        {
-            var game = visibleGames[i];
-            int col = i % cols;
-            int row = i / cols;
-
-            float x = startX + col * (cardW + gapX);
-            float y = startY + row * (cardH + gapY);
-            Rectangle cardRect = new(x, y, cardW, cardH);
-
-            // Check if card is visible within screen vertical bounds
-            if (y + cardH >= 70 && y <= GameCanvas.Height)
-            {
-                if (UiImageButton.WasClicked(cardRect))
+                Rectangle cardRect = GetCardRect(i);
+                if (cardRect.Y + cardRect.Height >= HeaderHeight && cardRect.Y <= GameCanvas.Height - FooterHeight)
                 {
-                    return game.Action;
+                    if (UiImageButton.WasClicked(cardRect))
+                    {
+                        return new MainMenuResult(Game: Games[i].CreateGame(_currency));
+                    }
                 }
             }
         }
 
-        return MainMenuAction.None;
-    }
-
-    private List<GameRegistryItem> GetFilteredGames()
-    {
-        string selectedCat = Categories[_selectedCategoryIndex];
-        if (selectedCat == "ALL GAMES") return Games;
-        if (selectedCat == "HOT") return Games.FindAll(g => g.Badge == "HOT" || g.Badge == "TOP");
-        return Games.FindAll(g => g.Category.Equals(selectedCat, StringComparison.OrdinalIgnoreCase));
+        return default;
     }
 
     public void Draw()
     {
-        // Background
         Raylib.ClearBackground(new Color(14, 19, 34, 255));
 
-        // Background subtle grid/mesh pattern
         for (int x = 0; x < GameCanvas.Width; x += 60)
         {
-            Raylib.DrawLine(x, 70, x, GameCanvas.Height, new Color(255, 255, 255, 4));
+            Raylib.DrawLine(x, (int)HeaderHeight, x, GameCanvas.Height, new Color(255, 255, 255, 4));
         }
 
-        // --- SCROLLABLE CONTENT (Game Grid) ---
-        var visibleGames = GetFilteredGames();
-        const int cols = 4;
-        const float cardW = 270;
-        const float cardH = 325;
-        const float gapX = 26;
-        const float gapY = 24;
-        float startX = (GameCanvas.Width - (cols * cardW + (cols - 1) * gapX)) / 2f;
-        float startY = 310 + _scrollY;
-
-        for (int i = 0; i < visibleGames.Count; i++)
+        // Scrollable Hero Banner
+        Rectangle bannerRect = new(30, 80 + _scrollY, 1220, 165);
+        if (bannerRect.Y + bannerRect.Height > HeaderHeight)
         {
-            var game = visibleGames[i];
-            int col = i % cols;
-            int row = i / cols;
-
-            float x = startX + col * (cardW + gapX);
-            float y = startY + row * (cardH + gapY);
-            Rectangle cardRect = new(x, y, cardW, cardH);
-
-            if (_cardTextures.TryGetValue(game.AssetPath, out var tex))
-            {
-                UiImageButton.DrawCard(tex, cardRect);
-            }
-            else
-            {
-                UiImageButton.DrawCard(default, cardRect);
-            }
+            UiImageButton.Draw(_banner, bannerRect, enabled: false);
         }
 
-        // --- HERO BANNER & CATEGORY BAR (Pinned under Header) ---
-        // Top Hero Banner
-        Rectangle bannerRect = new(30, 80, 1220, 165);
-        UiImageButton.Draw(_banner, bannerRect, enabled: false);
-
-        // Category Bar Background
-        Raylib.DrawRectangle(0, 255, GameCanvas.Width, 44, new Color(18, 24, 40, 240));
-        Raylib.DrawLine(0, 299, GameCanvas.Width, 299, new Color(255, 255, 255, 18));
-
-        // Category Tabs
-        float tabX = 40;
-        float tabY = 262;
-        for (int i = 0; i < Categories.Length; i++)
+        // Scrollable Game Grid
+        for (int i = 0; i < Games.Count; i++)
         {
-            bool isSelected = i == _selectedCategoryIndex;
-            string text = Categories[i];
-            int textWidth = (int)UiFont.MeasureText(text, 15, isBold: isSelected).X;
-            Rectangle tabRect = new(tabX, tabY, textWidth + 24, 30);
-
-            bool hovered = UiImageButton.IsHovered(tabRect);
-            if (isSelected)
-            {
-                Raylib.DrawRectangleRec(tabRect, new Color(255, 140, 0, 220));
-                Raylib.DrawRectangleLinesEx(tabRect, 1, Color.Gold);
-                UiFont.DrawCenteredInRect(text, tabRect, 15, Color.White, isBold: true);
-            }
-            else
-            {
-                if (hovered)
-                {
-                    Raylib.DrawRectangleRec(tabRect, new Color(255, 255, 255, 20));
-                }
-                UiFont.DrawCenteredInRect(text, tabRect, 15, hovered ? Color.White : Color.LightGray, isBold: false);
-            }
-
-            tabX += textWidth + 34;
+            Rectangle cardRect = GetCardRect(i);
+            _cardTextures.TryGetValue(Games[i].AssetPath, out var tex);
+            UiImageButton.DrawCard(tex, cardRect);
         }
 
-        // --- TOP HEADER BAR (Always on top) ---
-        Raylib.DrawRectangle(0, 0, GameCanvas.Width, 70, new Color(16, 21, 38, 255));
-        Raylib.DrawLine(0, 69, GameCanvas.Width, 69, new Color(255, 180, 0, 120));
+        // Top Header Bar (always on top)
+        Raylib.DrawRectangle(0, 0, GameCanvas.Width, (int)HeaderHeight, new Color(16, 21, 38, 255));
+        Raylib.DrawLine(0, (int)HeaderHeight - 1, GameCanvas.Width, (int)HeaderHeight - 1, new Color(255, 180, 0, 120));
 
-        // Logo
         if (_logo.Id != 0)
         {
             Rectangle logoSrc = new(0, 0, _logo.Width, _logo.Height);
@@ -282,33 +144,37 @@ internal sealed class MainMenuScene
             UiFont.DrawText("BINGO MINUS", 30, 20, 26, Color.Gold, isBold: true);
         }
 
-        // Live Coin Balance Container Pill
         Rectangle balanceRect = new(840, 14, 220, 44);
         Raylib.DrawRectangleRec(balanceRect, new Color(24, 32, 54, 255));
         Raylib.DrawRectangleLinesEx(balanceRect, 1, new Color(255, 215, 0, 180));
 
-        // Gold coin symbol + text
         Raylib.DrawCircle(865, 36, 13, Color.Gold);
         Raylib.DrawCircleLines(865, 36, 13, Color.White);
         UiFont.DrawText("$", 860, 28, 16, Color.Black, isBold: true);
 
-        string balanceStr = $"{_currency.Balance:N2}";
         UiFont.DrawText("COINS", 888, 17, 11, Color.LightGray, isBold: true);
-        UiFont.DrawText(balanceStr, 888, 30, 19, Color.Gold, isBold: true);
+        UiFont.DrawText($"{_currency.Balance:N2}", 888, 30, 19, Color.Gold, isBold: true);
 
-        // "GET COINS" Button (PNG)
-        Rectangle depRect = new(1080, 14, 170, 44);
-        UiImageButton.Draw(_btnDeposit, depRect);
+        UiImageButton.Draw(_btnDeposit, new Rectangle(1080, 14, 170, 44));
 
-        // --- BOTTOM FOOTER BAR ---
-        Raylib.DrawRectangle(0, GameCanvas.Height - 28, GameCanvas.Width, 28, new Color(10, 13, 22, 255));
-        Raylib.DrawLine(0, GameCanvas.Height - 28, GameCanvas.Width, GameCanvas.Height - 28, new Color(255, 255, 255, 15));
+        // Bottom Footer Bar
+        int footerY = GameCanvas.Height - (int)FooterHeight;
+        Raylib.DrawRectangle(0, footerY, GameCanvas.Width, (int)FooterHeight, new Color(10, 13, 22, 255));
+        Raylib.DrawLine(0, footerY, GameCanvas.Width, footerY, new Color(255, 255, 255, 15));
 
-        string footerLeft = "DEMO CURRENCY ONLY -- NO REAL-MONEY PURCHASES";
-        UiFont.DrawText(footerLeft, 25, GameCanvas.Height - 20, 12, new Color(150, 160, 180, 255), isBold: false);
+        UiFont.DrawText("DEMO CURRENCY ONLY -- NO REAL-MONEY PURCHASES", 25, GameCanvas.Height - 20, 12, new Color(150, 160, 180, 255), isBold: false);
 
-        string footerRight = "BINGO MINUS CASINO LOBBY";
+        const string footerRight = "BINGO MINUS CASINO LOBBY";
         int frWidth = (int)UiFont.MeasureText(footerRight, 12, isBold: true).X;
         UiFont.DrawText(footerRight, GameCanvas.Width - frWidth - 25, GameCanvas.Height - 20, 12, new Color(180, 190, 210, 255), isBold: true);
+    }
+
+    private Rectangle GetCardRect(int index)
+    {
+        float startX = (GameCanvas.Width - (Columns * CardWidth + (Columns - 1) * GapX)) / 2f;
+        float startY = GridStartY + _scrollY;
+        int col = index % Columns;
+        int row = index / Columns;
+        return new Rectangle(startX + col * (CardWidth + GapX), startY + row * (CardHeight + GapY), CardWidth, CardHeight);
     }
 }

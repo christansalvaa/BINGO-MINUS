@@ -5,7 +5,7 @@ using Raylib_cs;
 
 namespace BINGO_MINUS;
 
-public sealed class CrashMinigame : IMinigame
+public sealed class CrashMinigame : IMinigame, IDepositRequester
 {
     private const decimal MinimumBet = 1m;
     private const decimal DefaultStartingBet = 10m;
