@@ -6,7 +6,7 @@ using Raylib_cs;
 
 namespace BINGO_MINUS;
 
-public sealed class BaccaratMinigame : IMinigame
+public sealed class BaccaratMinigame : IMinigame, IDepositRequester
 {
     private static readonly int[] ChipValues = [1, 5, 25, 50, 100, 500, 1000];
 

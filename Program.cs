@@ -1,6 +1,5 @@
-// main program
-// edit only when adding minigames
-
+using System;
+using System.Globalization;
 using Raylib_cs;
 
 namespace BINGO_MINUS;
@@ -9,166 +8,95 @@ internal static class Program
 {
     private static void Main()
     {
-        int monitor = Raylib.GetCurrentMonitor();
-        int screenWidth = Raylib.GetMonitorWidth(monitor);
-        int screenHeight = Raylib.GetMonitorHeight(monitor);
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-        Raylib.SetConfigFlags(ConfigFlags.FullscreenMode);
-        Raylib.InitWindow(screenWidth, screenHeight, "BINGO MINUS");
-        Raylib.InitAudioDevice();
+        Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint | ConfigFlags.FullscreenMode);
+        Raylib.InitWindow(0, 0, "BINGO MINUS");
         Raylib.SetTargetFPS(60);
-
-        // 1. THIS STOPS THE GAME FROM CLOSING WHEN YOU PRESS ESCAPE
         Raylib.SetExitKey(KeyboardKey.Null);
 
-        var currency = new CurrencyManager(startingBalance: 100m);
+        Raylib.InitAudioDevice();
+        UiFont.Initialize();
+
+        var currency = new CurrencyManager(1000m);
         var mainMenu = new MainMenuScene(currency);
         var paywall = new PaywallScene(currency);
+        IMinigame? activeGame = null;
+        bool inPaywall = false;
 
-        IMinigame? minigame = null;
-        Screen currentScreen = Screen.MainMenu;
-
-        try
+        while (!Raylib.WindowShouldClose())
         {
-            while (!Raylib.WindowShouldClose())
+            float dt = Raylib.GetFrameTime();
+
+            if (activeGame != null)
             {
-                // 2. F11 TOGGLE FOR WINDOWED / FULLSCREEN MODE
-                if (Raylib.IsKeyPressed(KeyboardKey.F11))
+                activeGame.Update(dt);
+
+                bool wantsDeposit = activeGame is IDepositRequester deposit && deposit.WantsDeposit;
+
+                if (wantsDeposit)
                 {
-                    Raylib.ToggleFullscreen();
+                    activeGame.Stop();
+                    activeGame = null;
+                    inPaywall = true;
+                    paywall.Start();
                 }
-
-                float deltaTime = Raylib.GetFrameTime();
-
-                switch (currentScreen)
+                else if (activeGame.IsFinished)
                 {
-                    case Screen.MainMenu:
-                        MainMenuAction action = mainMenu.Update();
-                        HandleMainMenuAction(action, ref currentScreen, ref minigame, paywall, currency);
-                        break;
-
-                    case Screen.Paywall:
-                        if (paywall.Update())
-                        {
-                            currentScreen = Screen.MainMenu;
-                        }
-                        break;
-
-                    case Screen.Minigame when minigame is not null:
-                        minigame.Update(deltaTime);
-
-                        if (minigame.IsFinished)
-                        {
-                            bool goToDeposit = (minigame as CrashMinigame)?.WantsDeposit == true
-                                || (minigame as SlotsMinigame)?.WantsDeposit == true
-                                || (minigame as PlinkoMinigame)?.WantsDeposit == true
-                                || (minigame as BaccaratMinigame)?.WantsDeposit == true;
-                            minigame.Stop();
-                            minigame = null;
-
-                            if (goToDeposit)
-                            {
-                                paywall.Start();
-                                currentScreen = Screen.Paywall;
-                            }
-                            else
-                            {
-                                currentScreen = Screen.MainMenu;
-                            }
-                        }
-                        break;
+                    activeGame.Stop();
+                    activeGame = null;
                 }
-
-                Raylib.BeginDrawing();
-                Raylib.ClearBackground(new Color(14, 19, 34, 255));
-                GameCanvas.Begin();
-
-                switch (currentScreen)
-                {
-                    case Screen.MainMenu:
-                        mainMenu.Draw();
-                        break;
-                    case Screen.Paywall:
-                        paywall.Draw();
-                        break;
-                    case Screen.Minigame:
-                        minigame?.Draw();
-                        break;
-                }
-
-                GameCanvas.End();
-                Raylib.EndDrawing();
             }
-        }
-        finally
-        {
-            minigame?.Stop();
-            UiFont.Unload();
-            UiImageButton.UnloadAll();
-            if (Raylib.IsAudioDeviceReady())
+            else if (inPaywall)
             {
-                Raylib.CloseAudioDevice();
+                if (paywall.Update())
+                {
+                    inPaywall = false;
+                }
             }
-            Raylib.CloseWindow();
-        }
-    }
+            else
+            {
+                MainMenuResult result = mainMenu.Update();
+                if (result.OpenPaywall)
+                {
+                    inPaywall = true;
+                    paywall.Start();
+                }
+                else if (result.Game != null)
+                {
+                    activeGame = result.Game;
+                    activeGame.Start();
+                }
+            }
 
-    private static void HandleMainMenuAction(
-        MainMenuAction action,
-        ref Screen currentScreen,
-        ref IMinigame? minigame,
-        PaywallScene paywall,
-        CurrencyManager currency)
-    {
-        switch (action)
+            Raylib.BeginDrawing();
+            Raylib.ClearBackground(Color.Black);
+            GameCanvas.Begin();
+
+            if (activeGame != null)
+            {
+                activeGame.Draw();
+            }
+            else if (inPaywall)
+            {
+                paywall.Draw();
+            }
+            else
+            {
+                mainMenu.Draw();
+            }
+
+            GameCanvas.End();
+            Raylib.EndDrawing();
+        }
+
+        activeGame?.Stop();
+        UiFont.Unload();
+        if (Raylib.IsAudioDeviceReady())
         {
-            case MainMenuAction.PlayCrash:
-                minigame = new CrashMinigame(currency);
-                minigame.Start();
-                currentScreen = Screen.Minigame;
-                break;
-
-            case MainMenuAction.PlaySlots:
-                minigame = new SlotsMinigame(currency);
-                minigame.Start();
-                currentScreen = Screen.Minigame;
-                break;
-                
-            case MainMenuAction.PlayBlackjack:
-                minigame = new Blackjack(currency);
-                minigame.Start();
-                currentScreen = Screen.Minigame;
-                break;
-
-            case MainMenuAction.PlayCrossroads:
-                minigame = new Crossyroad(currency);
-                minigame.Start();
-                currentScreen = Screen.Minigame;
-                break;
-
-            case MainMenuAction.PlayPlinko:
-                minigame = new PlinkoMinigame(currency);
-                minigame.Start();
-                currentScreen = Screen.Minigame;
-                break;
-
-            case MainMenuAction.PlayBaccarat:
-                minigame = new BaccaratMinigame(currency);
-                minigame.Start();
-                currentScreen = Screen.Minigame;
-                break;
-
-            case MainMenuAction.OpenPaywall:
-                paywall.Start();
-                currentScreen = Screen.Paywall;
-                break;
+            Raylib.CloseAudioDevice();
         }
-    }
-
-    private enum Screen
-    {
-        MainMenu,
-        Paywall,
-        Minigame
+        Raylib.CloseWindow();
     }
 }

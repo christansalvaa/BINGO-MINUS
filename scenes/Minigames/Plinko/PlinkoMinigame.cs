@@ -6,7 +6,7 @@ using Raylib_cs;
 
 namespace BINGO_MINUS;
 
-public sealed class PlinkoMinigame : IMinigame
+public sealed class PlinkoMinigame : IMinigame, IDepositRequester
 {
     private const decimal MinimumBet = 1m;
     private const decimal DefaultBet = 10m;
