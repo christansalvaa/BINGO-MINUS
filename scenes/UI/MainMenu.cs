@@ -12,7 +12,9 @@ internal enum MainMenuAction
     PlaySlots,
     OpenPaywall,
     PlayBlackjack,
-    PlayCrossroads
+    PlayCrossroads,
+    PlayRoulette,
+    PlayColorGame
 }
 
 internal sealed record GameRegistryItem(
@@ -76,6 +78,22 @@ internal sealed class MainMenuScene
             "scenes/UI/Assets/card_crossyroad.png",
             "NEW",
             "Multiplier Highway"
+        ),
+        new(
+            MainMenuAction.PlayRoulette,
+            "EURO ROULETTE",
+            "TABLE",
+            "scenes/UI/assets/card_roulette.png",
+            "NEW",
+            "Single Zero Wheel"
+        ),
+        new(
+            MainMenuAction.PlayColorGame,
+            "COLOR GAME",
+            "ARCADE",
+            "scenes/UI/assets/card_colorgame.png",
+            "HOT",
+            "Perya Dice Classic"
         ),
     ];
 
