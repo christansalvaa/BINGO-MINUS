@@ -13,8 +13,7 @@ internal enum MainMenuAction
     OpenPaywall,
     PlayBlackjack,
     PlayCrossroads,
-    PlayRoulette,
-    PlayColorGame
+    PlayMines
 }
 
 internal sealed record GameRegistryItem(
@@ -80,20 +79,12 @@ internal sealed class MainMenuScene
             "Multiplier Highway"
         ),
         new(
-            MainMenuAction.PlayRoulette,
-            "EURO ROULETTE",
-            "TABLE",
-            "scenes/UI/assets/card_roulette.png",
-            "NEW",
-            "Single Zero Wheel"
-        ),
-        new(
-            MainMenuAction.PlayColorGame,
-            "COLOR GAME",
+            MainMenuAction.PlayMines,
+            "MINES",
             "ARCADE",
-            "scenes/UI/assets/card_colorgame.png",
-            "HOT",
-            "Perya Dice Classic"
+            "scenes/UI/Assets/card_mines.png",
+            "NEW",
+            "Gems & Bombs"
         ),
     ];
 
