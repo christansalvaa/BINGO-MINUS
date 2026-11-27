@@ -43,6 +43,8 @@ internal sealed class MainMenuScene
         new("scenes/UI/Assets/card_mines.png",      c => new MinesMinigame(c)),
         new("scenes/UI/Assets/card_roulette.png",   c => new RouletteMinigame(c)),
         new("scenes/UI/Assets/card_colorgame.png",  c => new ColorGameMinigame(c)),
+        new("scenes/UI/Assets/card_plinko.png",     c => new PlinkoMinigame(c)),
+        new("scenes/UI/Assets/card_baccarat.png",   c => new BaccaratMinigame(c)),
     ];
 
     public MainMenuScene(CurrencyManager currency)

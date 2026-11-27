@@ -78,19 +78,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\thela\\.nuget\\packages\\": {}
+    "C:\\Users\\angel\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\_Github-Projects\\BINGO-MINUS\\BINGO-MINUS.csproj",
+      "projectUniqueName": "C:\\Users\\angel\\Downloads\\BINGO-MINUS\\BINGO-MINUS.csproj",
       "projectName": "BINGO-MINUS",
-      "projectPath": "E:\\_Github-Projects\\BINGO-MINUS\\BINGO-MINUS.csproj",
-      "packagesPath": "C:\\Users\\thela\\.nuget\\packages\\",
-      "outputPath": "E:\\_Github-Projects\\BINGO-MINUS\\obj\\",
+      "projectPath": "C:\\Users\\angel\\Downloads\\BINGO-MINUS\\BINGO-MINUS.csproj",
+      "packagesPath": "C:\\Users\\angel\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\angel\\Downloads\\BINGO-MINUS\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\thela\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\angel\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
