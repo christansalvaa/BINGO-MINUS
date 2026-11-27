@@ -58,8 +58,8 @@ internal sealed class SlotsFX
         for (int i = 0; i < count; i++)
         {
             float angle = (float)(_rand.NextDouble() * Math.PI * 2);
-            float speed = (float)(_rand.Next(120, 500));
-            Vector2 vel = new((float)Math.Cos(angle) * speed, (float)Math.Sin(angle) * speed - 100f);
+            float speed = (float)(_rand.Next(180, 750));
+            Vector2 vel = new((float)Math.Cos(angle) * speed, (float)Math.Sin(angle) * speed - 150f);
 
             float life = (float)(0.4 + _rand.NextDouble() * 0.5);
 
@@ -87,7 +87,7 @@ internal sealed class SlotsFX
         for (int i = 0; i < 70; i++)
         {
             float angle = (float)(_rand.NextDouble() * Math.PI * 2);
-            float speed = (float)(_rand.Next(200, 750));
+            float speed = (float)(_rand.Next(300, 1125));
             Vector2 vel = new((float)Math.Cos(angle) * speed, (float)Math.Sin(angle) * speed);
 
             float life = (float)(0.5 + _rand.NextDouble() * 0.6);
@@ -119,9 +119,9 @@ internal sealed class SlotsFX
         for (int i = 0; i < count; i++)
         {
             float x = (float)(GameCanvas.Width * 0.2 + _rand.NextDouble() * GameCanvas.Width * 0.6);
-            float y = GameCanvas.Height + 10f;
-            float vx = (float)(_rand.Next(-180, 180));
-            float vy = (float)(-_rand.Next(450, 750));
+            float y = GameCanvas.Height + 15f;
+            float vx = (float)(_rand.Next(-270, 270));
+            float vy = (float)(-_rand.Next(675, 1125));
 
             float life = (float)(1.2 + _rand.NextDouble() * 0.8);
 
@@ -146,7 +146,7 @@ internal sealed class SlotsFX
         // Update screen shake
         if (_trauma > 0f)
         {
-            float shakePower = _trauma * _trauma * 18f;
+            float shakePower = _trauma * _trauma * 27f;
             float offsetX = (float)((_rand.NextDouble() * 2 - 1) * shakePower);
             float offsetY = (float)((_rand.NextDouble() * 2 - 1) * shakePower);
             ShakeOffset = new Vector2(offsetX, offsetY);
@@ -175,11 +175,11 @@ internal sealed class SlotsFX
             // Gravity
             if (p.Type == FXType.Coin || p.Type == FXType.CandyShard)
             {
-                p.Velocity.Y += 800f * deltaTime;
+                p.Velocity.Y += 1200f * deltaTime;
             }
             else
             {
-                p.Velocity.Y += 200f * deltaTime;
+                p.Velocity.Y += 300f * deltaTime;
                 p.Velocity *= 0.95f; // drag
             }
 
@@ -206,8 +206,8 @@ internal sealed class SlotsFX
                 case FXType.CandyShard:
                     // Draw diamond shard
                     Raylib.DrawRectanglePro(
-                        new Rectangle(p.Position.X, p.Position.Y, 14 * p.Scale, 14 * p.Scale),
-                        new Vector2(7 * p.Scale, 7 * p.Scale),
+                        new Rectangle(p.Position.X, p.Position.Y, 21 * p.Scale, 21 * p.Scale),
+                        new Vector2(10.5f * p.Scale, 10.5f * p.Scale),
                         p.Rotation,
                         c);
                     break;
@@ -215,28 +215,28 @@ internal sealed class SlotsFX
                 case FXType.Sparkle:
                     if (_texSparkle.Id != 0)
                     {
-                        float sz = 40 * p.Scale;
+                        float sz = 60 * p.Scale;
                         Rectangle src = new(0, 0, _texSparkle.Width, _texSparkle.Height);
                         Rectangle dest = new(p.Position.X, p.Position.Y, sz, sz);
                         Raylib.DrawTexturePro(_texSparkle, src, dest, new Vector2(sz / 2f, sz / 2f), p.Rotation, c);
                     }
                     else
                     {
-                        Raylib.DrawCircleV(p.Position, 5 * p.Scale, c);
+                        Raylib.DrawCircleV(p.Position, 7.5f * p.Scale, c);
                     }
                     break;
 
                 case FXType.Coin:
                     if (_texCoin.Id != 0)
                     {
-                        float sz = 34 * p.Scale;
+                        float sz = 51 * p.Scale;
                         Rectangle src = new(0, 0, _texCoin.Width, _texCoin.Height);
                         Rectangle dest = new(p.Position.X, p.Position.Y, sz, sz);
                         Raylib.DrawTexturePro(_texCoin, src, dest, new Vector2(sz / 2f, sz / 2f), p.Rotation, Color.White);
                     }
                     else
                     {
-                        Raylib.DrawCircleV(p.Position, 8 * p.Scale, Color.Gold);
+                        Raylib.DrawCircleV(p.Position, 12 * p.Scale, Color.Gold);
                     }
                     break;
             }

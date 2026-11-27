@@ -12,7 +12,7 @@ internal static class Program
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
         Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint | ConfigFlags.FullscreenMode);
-        Raylib.InitWindow(0, 0, "BINGO MINUS");
+        Raylib.InitWindow(GameCanvas.Width, GameCanvas.Height, "BINGO MINUS");
         Raylib.SetTargetFPS(60);
         Raylib.SetExitKey(KeyboardKey.Null);
 
@@ -21,9 +21,7 @@ internal static class Program
 
         var currency = new CurrencyManager(1000m);
         var mainMenu = new MainMenuScene(currency);
-        var paywall = new PaywallScene(currency);
         IMinigame? activeGame = null;
-        bool inPaywall = false;
 
         while (!Raylib.WindowShouldClose())
         {
@@ -39,8 +37,7 @@ internal static class Program
                 {
                     activeGame.Stop();
                     activeGame = null;
-                    inPaywall = true;
-                    paywall.Start();
+                    mainMenu.OpenFunds();
                 }
                 else if (activeGame.IsFinished)
                 {
@@ -48,22 +45,10 @@ internal static class Program
                     activeGame = null;
                 }
             }
-            else if (inPaywall)
-            {
-                if (paywall.Update())
-                {
-                    inPaywall = false;
-                }
-            }
             else
             {
                 MainMenuResult result = mainMenu.Update();
-                if (result.OpenPaywall)
-                {
-                    inPaywall = true;
-                    paywall.Start();
-                }
-                else if (result.Game != null)
+                if (result.Game != null)
                 {
                     activeGame = result.Game;
                     activeGame.Start();
@@ -72,22 +57,16 @@ internal static class Program
 
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.Black);
-            GameCanvas.Begin();
 
             if (activeGame != null)
             {
                 activeGame.Draw();
-            }
-            else if (inPaywall)
-            {
-                paywall.Draw();
             }
             else
             {
                 mainMenu.Draw();
             }
 
-            GameCanvas.End();
             Raylib.EndDrawing();
         }
 

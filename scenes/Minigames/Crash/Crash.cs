@@ -10,11 +10,11 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
     private const decimal MinimumBet = 1m;
     private const decimal DefaultStartingBet = 10m;
 
-    // Viewport coordinates (1280 x 720 canvas)
-    private const float ArenaX = 50f;
-    private const float ArenaY = 110f;
-    private const float ArenaWidth = 1180f;
-    private const float ArenaHeight = 420f;
+    // Viewport coordinates (1920 x 1080)
+    private const float ArenaX = 75f;
+    private const float ArenaY = 165f;
+    private const float ArenaWidth = 1770f;
+    private const float ArenaHeight = 630f;
 
     private readonly CurrencyManager _currency;
     private readonly Random _rand = new();
@@ -73,7 +73,7 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
     private readonly List<Vector2> _trailPoints = [];
 
     // Flight plane screen position
-    private Vector2 _planePos = new(ArenaX + 80f, ArenaY + ArenaHeight - 60f);
+    private Vector2 _planePos = new(ArenaX + 120f, ArenaY + ArenaHeight - 90f);
     private float _planeRotation = 0f;
 
     public string Name => "Aviator Crash";
@@ -344,18 +344,18 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
         float easeX = MathF.Pow(logProgress, 0.85f);
         float easeY = MathF.Pow(logProgress, 0.95f);
 
-        float targetX = ArenaX + 80f + easeX * (ArenaWidth - 220f);
-        float targetY = (ArenaY + ArenaHeight - 65f) - easeY * (ArenaHeight - 110f);
+        float targetX = ArenaX + 120f + easeX * (ArenaWidth - 330f);
+        float targetY = (ArenaY + ArenaHeight - 97.5f) - easeY * (ArenaHeight - 165f);
 
         // Small turbulent vibration
-        float turbulence = MathF.Sin(_flightTime * 14f) * 2.5f;
+        float turbulence = MathF.Sin(_flightTime * 14f) * 3.75f;
         _planePos = new Vector2(targetX, targetY + turbulence);
 
         // Tangent angle of climb
         _planeRotation = -16f - (1f - easeY) * 12f;
 
         // Record flight trail points
-        if (_trailPoints.Count == 0 || Vector2.Distance(_trailPoints[^1], _planePos) > 12f)
+        if (_trailPoints.Count == 0 || Vector2.Distance(_trailPoints[^1], _planePos) > 18f)
         {
             _trailPoints.Add(_planePos);
         }
@@ -451,31 +451,30 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
     }
 
     // ==================== DASHBOARD UI LAYOUT CONSTANTS (Single Source of Truth) ====================
-    private static readonly Rectangle DashRect = new(ArenaX, 545, ArenaWidth, 155);
+    private static readonly Rectangle DashRect = new(ArenaX, 818, ArenaWidth, 232);
 
-    // Section 1: Bet Controls (X: 75 to 445)
-    private static readonly Rectangle BetMinusRect = new(75, 564, 44, 44);
-    private static readonly Rectangle BetPillRect = new(127, 564, 150, 44);
-    private static readonly Rectangle BetPlusRect = new(285, 564, 44, 44);
+    // Section 1: Bet Controls
+    private static readonly Rectangle BetMinusRect = new(113, 846, 66, 66);
+    private static readonly Rectangle BetPillRect = new(191, 846, 225, 66);
+    private static readonly Rectangle BetPlusRect = new(428, 846, 66, 66);
 
     private static readonly decimal[] ChipPresets = [10m, 50m, 100m, 500m];
-    private static Rectangle GetChipRect(int index) => new(75 + index * 52, 626, 46, 32);
-    private static readonly Rectangle HalfBetRect = new(287, 626, 44, 32);
-    private static readonly Rectangle DoubleBetRect = new(337, 626, 44, 32);
-    private static readonly Rectangle MaxBetRect = new(387, 626, 52, 32);
+    private static Rectangle GetChipRect(int index) => new(113 + index * 78, 939, 69, 48);
+    private static readonly Rectangle HalfBetRect = new(431, 939, 66, 48);
+    private static readonly Rectangle DoubleBetRect = new(506, 939, 66, 48);
+    private static readonly Rectangle MaxBetRect = new(581, 939, 78, 48);
 
-    // Section 2: Big Action Button (Centered at X: 455 to 765, Width: 310, Height: 94)
-    private static readonly Rectangle ActionBtnRect = new(455, 562, 310, 94);
+    // Section 2: Big Action Button
+    private static readonly Rectangle ActionBtnRect = new(683, 843, 465, 141);
 
-    // Section 3: Auto Cashout Module (X: 785 to 1225)
-    // Prominent Dedicated Toggle Switch Button (Matching Slots Turbo/Auto toggle style)
-    private static readonly Rectangle AutoToggleBtnRect = new(785, 564, 195, 44);
-    private static readonly Rectangle AutoMinusBtnRect = new(995, 564, 44, 44);
-    private static readonly Rectangle AutoTargetPillRect = new(1047, 564, 126, 44);
-    private static readonly Rectangle AutoPlusBtnRect = new(1181, 564, 44, 44);
+    // Section 3: Auto Cashout Module
+    private static readonly Rectangle AutoToggleBtnRect = new(1178, 846, 293, 66);
+    private static readonly Rectangle AutoMinusBtnRect = new(1493, 846, 66, 66);
+    private static readonly Rectangle AutoTargetPillRect = new(1571, 846, 189, 66);
+    private static readonly Rectangle AutoPlusBtnRect = new(1772, 846, 66, 66);
 
     private static readonly decimal[] AutoPresets = [1.20m, 1.50m, 2.00m, 3.00m, 5.00m];
-    private static Rectangle GetAutoPresetRect(int index) => new(785 + index * 89, 626, 82, 32);
+    private static Rectangle GetAutoPresetRect(int index) => new(1178 + index * 133.5f, 939, 123, 48);
 
     private void UpdateDashboardControls()
     {
@@ -581,8 +580,8 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
         if (_screenShake > 0f)
         {
             shakeOffset = new Vector2(
-                ((float)_rand.NextDouble() * 2f - 1f) * _screenShake * 16f,
-                ((float)_rand.NextDouble() * 2f - 1f) * _screenShake * 16f
+                ((float)_rand.NextDouble() * 2f - 1f) * _screenShake * 24f,
+                ((float)_rand.NextDouble() * 2f - 1f) * _screenShake * 24f
             );
         }
 
@@ -610,13 +609,13 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
 
     private void DrawHistoryRibbon()
     {
-        Rectangle ribbonRect = new(ArenaX, 65, ArenaWidth, 38);
+        Rectangle ribbonRect = new(ArenaX, 98, ArenaWidth, 57);
         Raylib.DrawRectangleRec(ribbonRect, new Color(18, 24, 40, 220));
-        Raylib.DrawRectangleLinesEx(ribbonRect, 1, new Color(255, 255, 255, 20));
+        Raylib.DrawRectangleLinesEx(ribbonRect, 1.5f, new Color(255, 255, 255, 20));
 
-        UiFont.DrawText("HISTORY", ArenaX + 16, 75, 12, Color.Gray, isBold: true);
+        UiFont.DrawText("HISTORY", ArenaX + 24, 113, 18, Color.Gray, isBold: true);
 
-        float pillX = ArenaX + 90;
+        float pillX = ArenaX + 135;
         for (int i = 0; i < _history.Count; i++)
         {
             decimal mult = _history[i];
@@ -639,12 +638,12 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
                 textCol = new Color(254, 240, 138, 255);
             }
 
-            Rectangle pillRect = new(pillX, 70, 78, 26);
+            Rectangle pillRect = new(pillX, 105, 117, 39);
             Raylib.DrawRectangleRec(pillRect, pillBg);
-            Raylib.DrawRectangleLinesEx(pillRect, 1, textCol);
-            UiFont.DrawCenteredInRect($"{mult:0.00}x", pillRect, 12, textCol, isBold: true);
+            Raylib.DrawRectangleLinesEx(pillRect, 1.5f, textCol);
+            UiFont.DrawCenteredInRect($"{mult:0.00}x", pillRect, 18, textCol, isBold: true);
 
-            pillX += 86;
+            pillX += 129;
         }
     }
 
@@ -654,25 +653,25 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
 
         // Radar background deep dark space/radar blue
         Raylib.DrawRectangleRec(radarRect, new Color(11, 14, 24, 255));
-        Raylib.DrawRectangleLinesEx(radarRect, 2, new Color(255, 45, 70, 140));
+        Raylib.DrawRectangleLinesEx(radarRect, 3, new Color(255, 45, 70, 140));
 
         // Radar coordinate grid lines
-        for (float x = ArenaX + 100; x < ArenaX + ArenaWidth; x += 120)
+        for (float x = ArenaX + 150; x < ArenaX + ArenaWidth; x += 180)
         {
             Raylib.DrawLine((int)(x + shake.X), (int)(ArenaY + shake.Y), (int)(x + shake.X), (int)(ArenaY + ArenaHeight + shake.Y), new Color(255, 255, 255, 12));
         }
-        for (float y = ArenaY + 60; y < ArenaY + ArenaHeight; y += 60)
+        for (float y = ArenaY + 90; y < ArenaY + ArenaHeight; y += 90)
         {
-            Raylib.DrawLine((int)(ArenaX + shake.X), (int)(y + shake.Y), (int)(ArenaX + ArenaWidth + shake.Y), (int)(y + shake.Y), new Color(255, 255, 255, 12));
+            Raylib.DrawLine((int)(ArenaX + shake.X), (int)(y + shake.Y), (int)(ArenaX + ArenaWidth + shake.X), (int)(y + shake.Y), new Color(255, 255, 255, 12));
         }
 
         // Round Outcome Summary Badge (Top-left of radar)
         if (!string.IsNullOrEmpty(_lastRoundOutcomeText))
         {
-            Rectangle outcomeRect = new(ArenaX + 16 + shake.X, ArenaY + 14 + shake.Y, 280, 26);
+            Rectangle outcomeRect = new(ArenaX + 24 + shake.X, ArenaY + 21 + shake.Y, 420, 39);
             Raylib.DrawRectangleRec(outcomeRect, new Color(14, 18, 30, 230));
-            Raylib.DrawRectangleLinesEx(outcomeRect, 1, _lastRoundOutcomeColor);
-            UiFont.DrawCenteredInRect(_lastRoundOutcomeText, outcomeRect, 11, _lastRoundOutcomeColor, isBold: true);
+            Raylib.DrawRectangleLinesEx(outcomeRect, 1.5f, _lastRoundOutcomeColor);
+            UiFont.DrawCenteredInRect(_lastRoundOutcomeText, outcomeRect, 16.5f, _lastRoundOutcomeColor, isBold: true);
         }
 
         // Draw curved red flight trajectory
@@ -695,7 +694,7 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
                 Raylib.DrawTriangle(quad[0], quad[2], quad[3], new Color(220, 20, 50, 35));
 
                 // Glowing flight curve line
-                Raylib.DrawLineEx(p1, p2, 4f, new Color(255, 45, 70, 255));
+                Raylib.DrawLineEx(p1, p2, 6f, new Color(255, 45, 70, 255));
             }
         }
 
@@ -720,8 +719,8 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
         if (_texPlane.Id == 0) return;
 
         Vector2 drawPos = _planePos + shake;
-        float planeW = 110f;
-        float planeH = 70f;
+        float planeW = 165f;
+        float planeH = 105f;
 
         Rectangle src = new(0, 0, _texPlane.Width, _texPlane.Height);
         Rectangle dest = new(drawPos.X, drawPos.Y, planeW, planeH);
@@ -732,10 +731,10 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
         // Draw spinning propeller on the nose
         if (_texPropeller.Id != 0)
         {
-            float propW = 14f;
-            float propH = 46f;
+            float propW = 21f;
+            float propH = 69f;
             float rad = _planeRotation * MathF.PI / 180f;
-            Vector2 noseOffset = new(MathF.Cos(rad) * 44f, MathF.Sin(rad) * 44f);
+            Vector2 noseOffset = new(MathF.Cos(rad) * 66f, MathF.Sin(rad) * 66f);
             Vector2 propPos = drawPos + noseOffset;
 
             Rectangle propSrc = new(0, 0, _texPropeller.Width, _texPropeller.Height);
@@ -748,35 +747,35 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
 
     private void DrawMultiplierOverlay()
     {
-        Rectangle centerRect = new(ArenaX, ArenaY + 70, ArenaWidth, 120);
+        Rectangle centerRect = new(ArenaX, ArenaY + 105, ArenaWidth, 180);
 
         if (_state == FlightState.Idle)
         {
-            UiFont.DrawCenteredInRect("1.00x", centerRect, 68, Color.Gray, isBold: true);
-            UiFont.DrawCenteredInRect("READY FOR TAKE OFF", new Rectangle(ArenaX, ArenaY + 160, ArenaWidth, 24), 16, Color.LightGray, isBold: false);
+            UiFont.DrawCenteredInRect("1.00x", centerRect, 102, Color.Gray, isBold: true);
+            UiFont.DrawCenteredInRect("READY FOR TAKE OFF", new Rectangle(ArenaX, ArenaY + 240, ArenaWidth, 36), 24, Color.LightGray, isBold: false);
         }
         else if (_state == FlightState.TakingOff)
         {
-            UiFont.DrawCenteredInRect("1.00x", centerRect, 68, Color.Yellow, isBold: true);
-            UiFont.DrawCenteredInRect("STARTING ENGINES...", new Rectangle(ArenaX, ArenaY + 160, ArenaWidth, 24), 16, Color.Gold, isBold: true);
+            UiFont.DrawCenteredInRect("1.00x", centerRect, 102, Color.Yellow, isBold: true);
+            UiFont.DrawCenteredInRect("STARTING ENGINES...", new Rectangle(ArenaX, ArenaY + 240, ArenaWidth, 36), 24, Color.Gold, isBold: true);
         }
         else if (_state == FlightState.InFlight)
         {
             string multText = $"{_multiplier:0.00}x";
-            UiFont.DrawCenteredInRect(multText, centerRect, 76, Color.White, isBold: true);
+            UiFont.DrawCenteredInRect(multText, centerRect, 114, Color.White, isBold: true);
 
             if (_hasCashedOut)
             {
                 string wonText = $"CASHED OUT AT {_cashedOutMultiplier:0.00}x (+{_roundWinnings:N2} COINS)";
-                UiFont.DrawCenteredInRect(wonText, new Rectangle(ArenaX, ArenaY + 165, ArenaWidth, 28), 18, Color.Lime, isBold: true);
+                UiFont.DrawCenteredInRect(wonText, new Rectangle(ArenaX, ArenaY + 248, ArenaWidth, 42), 27, Color.Lime, isBold: true);
             }
         }
         else if (_state == FlightState.Crashed)
         {
-            UiFont.DrawCenteredInRect("FLEW AWAY!", centerRect, 72, new Color(255, 45, 70, 255), isBold: true);
+            UiFont.DrawCenteredInRect("FLEW AWAY!", centerRect, 108, new Color(255, 45, 70, 255), isBold: true);
             string crashResult = $"CRASHED AT {_crashPoint:0.00}x";
             Color resColor = _hasCashedOut ? Color.Lime : new Color(255, 120, 140, 255);
-            UiFont.DrawCenteredInRect(crashResult, new Rectangle(ArenaX, ArenaY + 165, ArenaWidth, 28), 18, resColor, isBold: true);
+            UiFont.DrawCenteredInRect(crashResult, new Rectangle(ArenaX, ArenaY + 248, ArenaWidth, 42), 27, resColor, isBold: true);
         }
     }
 
@@ -784,27 +783,27 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
     {
         // Dashboard Base Plate
         Raylib.DrawRectangleRec(DashRect, new Color(19, 25, 40, 255));
-        Raylib.DrawRectangleLinesEx(DashRect, 2, new Color(255, 255, 255, 25));
+        Raylib.DrawRectangleLinesEx(DashRect, 3, new Color(255, 255, 255, 25));
 
         // ==================== SECTION 1: BETTING CONTROLS ====================
-        UiFont.DrawText("BET AMOUNT", 75, 548, 11, Color.Gray, isBold: true);
+        UiFont.DrawText("BET AMOUNT", 113, 822, 16.5f, Color.Gray, isBold: true);
 
         // Minus Button
         bool minusHov = UiImageButton.IsHovered(BetMinusRect);
         Raylib.DrawRectangleRec(BetMinusRect, new Color(30, 40, 60, 255));
-        Raylib.DrawRectangleLinesEx(BetMinusRect, 1, minusHov ? Color.Gold : Color.LightGray);
-        UiFont.DrawCenteredInRect("-", BetMinusRect, 22, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(BetMinusRect, 1.5f, minusHov ? Color.Gold : Color.LightGray);
+        UiFont.DrawCenteredInRect("-", BetMinusRect, 33, Color.White, isBold: true);
 
         // Bet Amount Pill
         Raylib.DrawRectangleRec(BetPillRect, new Color(12, 16, 26, 255));
-        Raylib.DrawRectangleLinesEx(BetPillRect, 1, Color.Gold);
-        UiFont.DrawCenteredInRect($"{_bet:N2}", BetPillRect, 18, Color.Gold, isBold: true);
+        Raylib.DrawRectangleLinesEx(BetPillRect, 1.5f, Color.Gold);
+        UiFont.DrawCenteredInRect($"{_bet:N2}", BetPillRect, 27, Color.Gold, isBold: true);
 
         // Plus Button
         bool plusHov = UiImageButton.IsHovered(BetPlusRect);
         Raylib.DrawRectangleRec(BetPlusRect, new Color(30, 40, 60, 255));
-        Raylib.DrawRectangleLinesEx(BetPlusRect, 1, plusHov ? Color.Gold : Color.LightGray);
-        UiFont.DrawCenteredInRect("+", BetPlusRect, 22, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(BetPlusRect, 1.5f, plusHov ? Color.Gold : Color.LightGray);
+        UiFont.DrawCenteredInRect("+", BetPlusRect, 33, Color.White, isBold: true);
 
         // Chip Presets: 10, 50, 100, 500
         for (int i = 0; i < ChipPresets.Length; i++)
@@ -812,93 +811,93 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
             Rectangle chipRect = GetChipRect(i);
             bool chipHov = UiImageButton.IsHovered(chipRect);
             Raylib.DrawRectangleRec(chipRect, new Color(26, 34, 52, 255));
-            Raylib.DrawRectangleLinesEx(chipRect, 1, chipHov ? Color.Gold : new Color(255, 255, 255, 30));
-            UiFont.DrawCenteredInRect($"{ChipPresets[i]:0}", chipRect, 11, chipHov ? Color.Gold : Color.LightGray, isBold: true);
+            Raylib.DrawRectangleLinesEx(chipRect, 1.5f, chipHov ? Color.Gold : new Color(255, 255, 255, 30));
+            UiFont.DrawCenteredInRect($"{ChipPresets[i]:0}", chipRect, 16.5f, chipHov ? Color.Gold : Color.LightGray, isBold: true);
         }
 
         // Modifiers: 1/2, 2X, MAX
         bool halfHov = UiImageButton.IsHovered(HalfBetRect);
         Raylib.DrawRectangleRec(HalfBetRect, new Color(26, 34, 52, 255));
-        Raylib.DrawRectangleLinesEx(HalfBetRect, 1, halfHov ? Color.Gold : new Color(255, 255, 255, 30));
-        UiFont.DrawCenteredInRect("1/2", HalfBetRect, 11, halfHov ? Color.Gold : Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(HalfBetRect, 1.5f, halfHov ? Color.Gold : new Color(255, 255, 255, 30));
+        UiFont.DrawCenteredInRect("1/2", HalfBetRect, 16.5f, halfHov ? Color.Gold : Color.LightGray, isBold: true);
 
         bool doubleHov = UiImageButton.IsHovered(DoubleBetRect);
         Raylib.DrawRectangleRec(DoubleBetRect, new Color(26, 34, 52, 255));
-        Raylib.DrawRectangleLinesEx(DoubleBetRect, 1, doubleHov ? Color.Gold : new Color(255, 255, 255, 30));
-        UiFont.DrawCenteredInRect("2X", DoubleBetRect, 11, doubleHov ? Color.Gold : Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(DoubleBetRect, 1.5f, doubleHov ? Color.Gold : new Color(255, 255, 255, 30));
+        UiFont.DrawCenteredInRect("2X", DoubleBetRect, 16.5f, doubleHov ? Color.Gold : Color.LightGray, isBold: true);
 
         bool maxHov = UiImageButton.IsHovered(MaxBetRect);
         Color maxBg = _isMaxBet ? new Color(36, 48, 72, 255) : new Color(26, 34, 52, 255);
         Raylib.DrawRectangleRec(MaxBetRect, maxBg);
-        Raylib.DrawRectangleLinesEx(MaxBetRect, _isMaxBet ? 2 : 1, _isMaxBet ? Color.Lime : (maxHov ? Color.Yellow : Color.Gold));
-        UiFont.DrawCenteredInRect("MAX", MaxBetRect, 11, _isMaxBet ? Color.Lime : Color.Gold, isBold: true);
+        Raylib.DrawRectangleLinesEx(MaxBetRect, _isMaxBet ? 3 : 1.5f, _isMaxBet ? Color.Lime : (maxHov ? Color.Yellow : Color.Gold));
+        UiFont.DrawCenteredInRect("MAX", MaxBetRect, 16.5f, _isMaxBet ? Color.Lime : Color.Gold, isBold: true);
 
         // ==================== SECTION 2: BIG ACTION BUTTON ====================
         if (_state == FlightState.Idle || _state == FlightState.Crashed)
         {
             // Green "BET / LAUNCH" button
             UiImageButton.Draw(_texBtnLaunch, ActionBtnRect);
-            UiFont.DrawCenteredInRect("BET", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + 16, ActionBtnRect.Width, 32), 26, Color.White, isBold: true);
-            UiFont.DrawCenteredInRect($"{_bet:N2} COINS", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + 52, ActionBtnRect.Width, 24), 16, new Color(200, 255, 210, 255), isBold: true);
+            UiFont.DrawCenteredInRect("BET", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + 24, ActionBtnRect.Width, 48), 39, Color.White, isBold: true);
+            UiFont.DrawCenteredInRect($"{_bet:N2} COINS", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + 78, ActionBtnRect.Width, 36), 24, new Color(200, 255, 210, 255), isBold: true);
         }
         else if (_state == FlightState.InFlight && _hasActiveBet && !_hasCashedOut)
         {
             // Amber Gold "CASH OUT" button with live winnings
             UiImageButton.Draw(_texBtnCashout, ActionBtnRect);
             decimal liveWin = decimal.Round(_bet * _multiplier, 2);
-            UiFont.DrawCenteredInRect("CASH OUT", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + 16, ActionBtnRect.Width, 32), 26, Color.White, isBold: true);
-            UiFont.DrawCenteredInRect($"{liveWin:N2} COINS", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + 52, ActionBtnRect.Width, 24), 18, Color.Yellow, isBold: true);
+            UiFont.DrawCenteredInRect("CASH OUT", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + 24, ActionBtnRect.Width, 48), 39, Color.White, isBold: true);
+            UiFont.DrawCenteredInRect($"{liveWin:N2} COINS", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + 78, ActionBtnRect.Width, 36), 27, Color.Yellow, isBold: true);
         }
         else
         {
             // Waiting / Cashed Out / Watching
             Raylib.DrawRectangleRec(ActionBtnRect, new Color(35, 45, 65, 255));
-            Raylib.DrawRectangleLinesEx(ActionBtnRect, 1, Color.Gray);
+            Raylib.DrawRectangleLinesEx(ActionBtnRect, 1.5f, Color.Gray);
             string statusStr = _hasCashedOut ? "CASHED OUT" : "IN FLIGHT";
             Color col = _hasCashedOut ? Color.Lime : Color.Gray;
-            UiFont.DrawCenteredInRect(statusStr, ActionBtnRect, 22, col, isBold: true);
+            UiFont.DrawCenteredInRect(statusStr, ActionBtnRect, 33, col, isBold: true);
         }
 
         // Keyboard Spacebar Shortcut Helper Tooltip
-        UiFont.DrawCenteredInRect("[SPACE] LAUNCH / CASH OUT", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + ActionBtnRect.Height + 5, ActionBtnRect.Width, 16), 10, new Color(140, 160, 195, 200), isBold: false);
+        UiFont.DrawCenteredInRect("[SPACE] LAUNCH / CASH OUT", new Rectangle(ActionBtnRect.X, ActionBtnRect.Y + ActionBtnRect.Height + 8, ActionBtnRect.Width, 24), 15, new Color(140, 160, 195, 200), isBold: false);
 
         // ==================== SECTION 3: AUTO-CASHOUT MODULE ====================
-        UiFont.DrawText("AUTO CASHOUT", 785, 548, 11, Color.Gray, isBold: true);
+        UiFont.DrawText("AUTO CASHOUT", 1178, 822, 16.5f, Color.Gray, isBold: true);
 
         // Prominent Dedicated Toggle Switch Button (Like Slots Auto/Turbo toggle)
         bool toggleHovered = UiImageButton.IsHovered(AutoToggleBtnRect);
         Color toggleBg = _autoCashoutEnabled ? new Color(18, 38, 28, 255) : new Color(24, 30, 46, 255);
         Color toggleBorder = _autoCashoutEnabled ? Color.Lime : (toggleHovered ? Color.Gold : new Color(255, 255, 255, 40));
         Raylib.DrawRectangleRec(AutoToggleBtnRect, toggleBg);
-        Raylib.DrawRectangleLinesEx(AutoToggleBtnRect, _autoCashoutEnabled ? 2 : 1, toggleBorder);
+        Raylib.DrawRectangleLinesEx(AutoToggleBtnRect, _autoCashoutEnabled ? 3 : 1.5f, toggleBorder);
 
         Color toggleTextColor = _autoCashoutEnabled ? Color.White : Color.LightGray;
-        UiFont.DrawText("AUTO CASH", AutoToggleBtnRect.X + 14, AutoToggleBtnRect.Y + 14, 13, toggleTextColor, isBold: true);
+        UiFont.DrawText("AUTO CASH", AutoToggleBtnRect.X + 21, AutoToggleBtnRect.Y + 21, 19.5f, toggleTextColor, isBold: true);
 
         // State Badge [ ON ] / [ OFF ]
-        Rectangle badgeRect = new(AutoToggleBtnRect.X + AutoToggleBtnRect.Width - 66, AutoToggleBtnRect.Y + 8, 54, 28);
+        Rectangle badgeRect = new(AutoToggleBtnRect.X + AutoToggleBtnRect.Width - 99, AutoToggleBtnRect.Y + 12, 81, 42);
         Color badgeBg = _autoCashoutEnabled ? new Color(22, 163, 74, 255) : new Color(42, 50, 68, 255);
         Color badgeText = _autoCashoutEnabled ? Color.White : Color.Gray;
         Raylib.DrawRectangleRec(badgeRect, badgeBg);
-        Raylib.DrawRectangleLinesEx(badgeRect, 1, _autoCashoutEnabled ? Color.Lime : Color.Gray);
-        UiFont.DrawCenteredInRect(_autoCashoutEnabled ? "ON" : "OFF", badgeRect, 13, badgeText, isBold: true);
+        Raylib.DrawRectangleLinesEx(badgeRect, 1.5f, _autoCashoutEnabled ? Color.Lime : Color.Gray);
+        UiFont.DrawCenteredInRect(_autoCashoutEnabled ? "ON" : "OFF", badgeRect, 19.5f, badgeText, isBold: true);
 
         // Multiplier Adjust Stepper: [-]  [ 2.00x ]  [+]
         bool autoMinusHov = UiImageButton.IsHovered(AutoMinusBtnRect);
         Raylib.DrawRectangleRec(AutoMinusBtnRect, new Color(30, 40, 60, 255));
-        Raylib.DrawRectangleLinesEx(AutoMinusBtnRect, 1, autoMinusHov ? Color.Gold : Color.LightGray);
-        UiFont.DrawCenteredInRect("-", AutoMinusBtnRect, 22, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(AutoMinusBtnRect, 1.5f, autoMinusHov ? Color.Gold : Color.LightGray);
+        UiFont.DrawCenteredInRect("-", AutoMinusBtnRect, 33, Color.White, isBold: true);
 
         bool pillHov = UiImageButton.IsHovered(AutoTargetPillRect);
         Raylib.DrawRectangleRec(AutoTargetPillRect, new Color(12, 16, 26, 255));
         Color pillBorder = _autoCashoutEnabled ? Color.Lime : (pillHov ? Color.Gold : Color.LightGray);
-        Raylib.DrawRectangleLinesEx(AutoTargetPillRect, _autoCashoutEnabled ? 2 : 1, pillBorder);
-        UiFont.DrawCenteredInRect($"{_autoCashoutTarget:0.00}x", AutoTargetPillRect, 18, Color.Gold, isBold: true);
+        Raylib.DrawRectangleLinesEx(AutoTargetPillRect, _autoCashoutEnabled ? 3 : 1.5f, pillBorder);
+        UiFont.DrawCenteredInRect($"{_autoCashoutTarget:0.00}x", AutoTargetPillRect, 27, Color.Gold, isBold: true);
 
         bool autoPlusHov = UiImageButton.IsHovered(AutoPlusBtnRect);
         Raylib.DrawRectangleRec(AutoPlusBtnRect, new Color(30, 40, 60, 255));
-        Raylib.DrawRectangleLinesEx(AutoPlusBtnRect, 1, autoPlusHov ? Color.Gold : Color.LightGray);
-        UiFont.DrawCenteredInRect("+", AutoPlusBtnRect, 22, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(AutoPlusBtnRect, 1.5f, autoPlusHov ? Color.Gold : Color.LightGray);
+        UiFont.DrawCenteredInRect("+", AutoPlusBtnRect, 33, Color.White, isBold: true);
 
         // Preset Target Pills: 1.20x, 1.50x, 2.00x, 3.00x, 5.00x
         for (int i = 0; i < AutoPresets.Length; i++)
@@ -912,16 +911,16 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
             Color prText = isCurrent ? Color.Gold : (prHov ? Color.White : Color.LightGray);
 
             Raylib.DrawRectangleRec(prRect, prBg);
-            Raylib.DrawRectangleLinesEx(prRect, isCurrent ? 2 : 1, prBorder);
-            UiFont.DrawCenteredInRect($"{AutoPresets[i]:0.00}x", prRect, 12, prText, isBold: true);
+            Raylib.DrawRectangleLinesEx(prRect, isCurrent ? 3 : 1.5f, prBorder);
+            UiFont.DrawCenteredInRect($"{AutoPresets[i]:0.00}x", prRect, 18, prText, isBold: true);
         }
     }
 
     // Modal Dialog Layout Rectangles
-    private static readonly Rectangle ModalBoxRect = new(390, 220, 500, 280);
-    private static readonly Rectangle ModalDepositBtnRect = new(420, 425, 205, 48);
-    private static readonly Rectangle ModalLobbyBtnRect = new(655, 425, 205, 48);
-    private static readonly Rectangle ModalCloseBtnRect = new(854, 232, 26, 26);
+    private static readonly Rectangle ModalBoxRect = new(585, 330, 750, 420);
+    private static readonly Rectangle ModalDepositBtnRect = new(630, 638, 308, 72);
+    private static readonly Rectangle ModalLobbyBtnRect = new(983, 638, 308, 72);
+    private static readonly Rectangle ModalCloseBtnRect = new(1281, 348, 39, 39);
 
     private void UpdateOutOfCoinsModal()
     {
@@ -951,46 +950,46 @@ public sealed class CrashMinigame : IMinigame, IDepositRequester
     private void DrawOutOfCoinsModal()
     {
         // 1. Semi-transparent dark background backdrop
-        Raylib.DrawRectangle(0, 0, 1280, 720, new Color(0, 0, 0, 210));
+        Raylib.DrawRectangle(0, 0, GameCanvas.Width, GameCanvas.Height, new Color(0, 0, 0, 210));
 
         // 2. Modal Card Frame
         Raylib.DrawRectangleRec(ModalBoxRect, new Color(18, 24, 38, 255));
-        Raylib.DrawRectangleLinesEx(ModalBoxRect, 2, Color.Gold);
+        Raylib.DrawRectangleLinesEx(ModalBoxRect, 3, Color.Gold);
 
         // 3. Close Button [X]
         bool closeHov = UiImageButton.IsHovered(ModalCloseBtnRect);
         Raylib.DrawRectangleRec(ModalCloseBtnRect, closeHov ? new Color(220, 38, 38, 200) : new Color(36, 44, 62, 255));
-        Raylib.DrawRectangleLinesEx(ModalCloseBtnRect, 1, closeHov ? Color.Red : Color.Gray);
-        UiFont.DrawCenteredInRect("X", ModalCloseBtnRect, 14, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalCloseBtnRect, 1.5f, closeHov ? Color.Red : Color.Gray);
+        UiFont.DrawCenteredInRect("X", ModalCloseBtnRect, 21, Color.White, isBold: true);
 
         // 4. Header Title & Icon
-        Rectangle titleRect = new(ModalBoxRect.X, ModalBoxRect.Y + 28, ModalBoxRect.Width, 34);
-        UiFont.DrawCenteredInRect("! OUT OF COINS !", titleRect, 24, Color.Gold, isBold: true);
+        Rectangle titleRect = new(ModalBoxRect.X, ModalBoxRect.Y + 42, ModalBoxRect.Width, 51);
+        UiFont.DrawCenteredInRect("! OUT OF COINS !", titleRect, 36, Color.Gold, isBold: true);
 
         // 5. Message Body
-        Rectangle msg1Rect = new(ModalBoxRect.X + 20, ModalBoxRect.Y + 80, ModalBoxRect.Width - 40, 28);
-        UiFont.DrawCenteredInRect($"You need {_bet:N2} coins to place this bet.", msg1Rect, 18, Color.White);
+        Rectangle msg1Rect = new(ModalBoxRect.X + 30, ModalBoxRect.Y + 120, ModalBoxRect.Width - 60, 42);
+        UiFont.DrawCenteredInRect($"You need {_bet:N2} coins to place this bet.", msg1Rect, 27, Color.White);
 
-        Rectangle msg2Rect = new(ModalBoxRect.X + 20, ModalBoxRect.Y + 115, ModalBoxRect.Width - 40, 26);
-        UiFont.DrawCenteredInRect($"Your current balance: {_currency.Balance:N2} coins", msg2Rect, 16, Color.LightGray);
+        Rectangle msg2Rect = new(ModalBoxRect.X + 30, ModalBoxRect.Y + 172, ModalBoxRect.Width - 60, 39);
+        UiFont.DrawCenteredInRect($"Your current balance: {_currency.Balance:N2} coins", msg2Rect, 24, Color.LightGray);
 
-        Rectangle hintRect = new(ModalBoxRect.X + 20, ModalBoxRect.Y + 152, ModalBoxRect.Width - 40, 22);
-        UiFont.DrawCenteredInRect("Deposit coins now or return to the main lobby.", hintRect, 14, new Color(160, 174, 192, 255));
+        Rectangle hintRect = new(ModalBoxRect.X + 30, ModalBoxRect.Y + 228, ModalBoxRect.Width - 60, 33);
+        UiFont.DrawCenteredInRect("Deposit coins now or return to the main lobby.", hintRect, 21, new Color(160, 174, 192, 255));
 
         // 6. Action Buttons
         // Deposit More
         bool depHov = UiImageButton.IsHovered(ModalDepositBtnRect);
         Color depBg = depHov ? new Color(40, 200, 100, 255) : new Color(34, 160, 80, 255);
         Raylib.DrawRectangleRec(ModalDepositBtnRect, depBg);
-        Raylib.DrawRectangleLinesEx(ModalDepositBtnRect, 2, depHov ? Color.Lime : Color.Gold);
-        UiFont.DrawCenteredInRect("DEPOSIT MORE", ModalDepositBtnRect, 16, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalDepositBtnRect, 3, depHov ? Color.Lime : Color.Gold);
+        UiFont.DrawCenteredInRect("DEPOSIT MORE", ModalDepositBtnRect, 24, Color.White, isBold: true);
 
         // Return to Lobby
         bool lobHov = UiImageButton.IsHovered(ModalLobbyBtnRect);
         Color lobBg = lobHov ? new Color(71, 85, 105, 255) : new Color(51, 65, 85, 255);
         Raylib.DrawRectangleRec(ModalLobbyBtnRect, lobBg);
-        Raylib.DrawRectangleLinesEx(ModalLobbyBtnRect, 1, lobHov ? Color.White : Color.Gray);
-        UiFont.DrawCenteredInRect("RETURN TO LOBBY", ModalLobbyBtnRect, 15, Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalLobbyBtnRect, 1.5f, lobHov ? Color.White : Color.Gray);
+        UiFont.DrawCenteredInRect("RETURN TO LOBBY", ModalLobbyBtnRect, 22.5f, Color.LightGray, isBold: true);
     }
 }
 

@@ -18,17 +18,17 @@ namespace BINGO_MINUS;
 
 internal static class RouletteTable
 {
-    public const float X0 = 395f;
-    public const float Y0 = 108f;
-    public const float ZeroW = 62f;
-    public const float CellW = 60f;
-    public const float CellH = 62f;
-    public const float ColBetW = 62f;
-    public const float OutsideH = 46f;
+    public const float X0 = 593f;
+    public const float Y0 = 162f;
+    public const float ZeroW = 93f;
+    public const float CellW = 90f;
+    public const float CellH = 93f;
+    public const float ColBetW = 93f;
+    public const float OutsideH = 69f;
     public const float NumX0 = X0 + ZeroW;
 
     // How close to a cell border (in pixels) a click counts as an edge/corner bet.
-    private const float Edge = 11f;
+    private const float Edge = 16.5f;
 
     public static Rectangle ZeroRect => new(X0, Y0, ZeroW, CellH * 3);
 

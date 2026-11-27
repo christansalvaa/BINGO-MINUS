@@ -36,12 +36,12 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
 {
     public const int Cols = 6;
     public const int Rows = 5;
-    private const float CellSize = 84f;
-    private const float CellGap = 8f;
+    private const float CellSize = 126f;
+    private const float CellGap = 12f;
 
     // Grid Coordinates
-    public const float GridStartX = 368f;
-    public const float GridStartY = 80f;
+    public const float GridStartX = 552f;
+    public const float GridStartY = 120f;
 
     private readonly CurrencyManager _currency;
     private readonly Random _rand = new();
@@ -408,14 +408,14 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
         }
 
         // Manual Spin Button (when auto is not active)
-        Rectangle spinRect = new(1015, 595, 96, 96);
+        Rectangle spinRect = new(1523, 893, 144, 144);
         if (!_autoSpin && (UiImageButton.WasClicked(spinRect) || Raylib.IsKeyPressed(KeyboardKey.Space)))
         {
             TryTriggerSpin();
         }
 
         // Bet Minus
-        Rectangle minusRect = new(175, 620, 46, 46);
+        Rectangle minusRect = new(263, 930, 69, 69);
         if (UiImageButton.WasClicked(minusRect))
         {
             if (_betIndex > 0)
@@ -426,7 +426,7 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
         }
 
         // Bet Plus
-        Rectangle plusRect = new(345, 620, 46, 46);
+        Rectangle plusRect = new(518, 930, 69, 69);
         if (UiImageButton.WasClicked(plusRect))
         {
             if (_betIndex < BetPresets.Length - 1)
@@ -872,16 +872,16 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
             IsFinished = true;
         }
 
-        // 2. Machine Outer Cabinet (y: 68 to 570)
-        Rectangle cabinetRect = new(GridStartX - 28 + shake.X, GridStartY - 12 + shake.Y, 600, 480);
+        // 2. Machine Outer Cabinet (y: 102 to 855)
+        Rectangle cabinetRect = new(GridStartX - 42 + shake.X, GridStartY - 18 + shake.Y, 900, 720);
         Raylib.DrawRectangleRec(cabinetRect, new Color(18, 24, 40, 240));
-        Raylib.DrawRectangleLinesEx(cabinetRect, 3, new Color(255, 180, 0, 180));
+        Raylib.DrawRectangleLinesEx(cabinetRect, 4.5f, new Color(255, 180, 0, 180));
 
         // Machine subtle vertical reel borders
         for (int c = 0; c <= Cols; c++)
         {
             float lineX = GridStartX + c * (CellSize + CellGap) - CellGap / 2f + shake.X;
-            Raylib.DrawLine((int)lineX, (int)GridStartY - 8, (int)lineX, (int)(GridStartY + Rows * (CellSize + CellGap)), new Color(255, 255, 255, 15));
+            Raylib.DrawLine((int)lineX, (int)GridStartY - 12, (int)lineX, (int)(GridStartY + Rows * (CellSize + CellGap)), new Color(255, 255, 255, 15));
         }
 
         // 3. Draw 6x5 Grid Symbols
@@ -893,7 +893,7 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
                 if (cell.IsEmpty) continue;
 
                 // Cull if above visible window
-                if (cell.Y + CellSize < GridStartY - 20) continue;
+                if (cell.Y + CellSize < GridStartY - 30) continue;
 
                 float drawX = GridStartX + c * (CellSize + CellGap) + shake.X;
                 float drawY = cell.Y + shake.Y;
@@ -901,7 +901,7 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
                 // Cell background glass box
                 Rectangle cellBox = new(drawX, drawY, CellSize, CellSize);
                 Raylib.DrawRectangleRec(cellBox, new Color(26, 34, 56, 180));
-                Raylib.DrawRectangleLinesEx(cellBox, 1, new Color(255, 255, 255, 25));
+                Raylib.DrawRectangleLinesEx(cellBox, 1.5f, new Color(255, 255, 255, 25));
 
                 if (_symbolTextures.TryGetValue(cell.Symbol, out var tex) && tex.Id != 0)
                 {
@@ -918,14 +918,14 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
                     if (cell.Symbol == SlotSymbolType.Bomb)
                     {
                         string multStr = $"{cell.BombMultiplier}x";
-                        UiFont.DrawCenteredInRect(multStr, cellBox, 15, Color.Yellow, isBold: true);
+                        UiFont.DrawCenteredInRect(multStr, cellBox, 22.5f, Color.Yellow, isBold: true);
                     }
                 }
 
                 // Winning cell pulse frame
                 if (cell.IsWinning)
                 {
-                    Raylib.DrawRectangleLinesEx(cellBox, 3, Color.Gold);
+                    Raylib.DrawRectangleLinesEx(cellBox, 4.5f, Color.Gold);
                 }
             }
         }
@@ -957,11 +957,11 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
 
     private void DrawTumbleTower()
     {
-        Rectangle towerRect = new(50, 85, 270, 460);
+        Rectangle towerRect = new(75, 128, 405, 690);
         Raylib.DrawRectangleRec(towerRect, new Color(20, 26, 44, 235));
-        Raylib.DrawRectangleLinesEx(towerRect, 2, new Color(255, 180, 0, 150));
+        Raylib.DrawRectangleLinesEx(towerRect, 3, new Color(255, 180, 0, 150));
 
-        UiFont.DrawCenteredInRect("MULTIPLIER VAULT", new Rectangle(50, 95, 270, 28), 16, Color.Gold, isBold: true);
+        UiFont.DrawCenteredInRect("MULTIPLIER VAULT", new Rectangle(75, 143, 405, 42), 24, Color.Gold, isBold: true);
 
         // Calculate total active bomb multiplier in vault
         int collectedMult = 0;
@@ -971,16 +971,16 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
         }
 
         // Vault Chamber Box
-        Rectangle vaultBox = new(65, 130, 240, 160);
+        Rectangle vaultBox = new(98, 195, 360, 240);
         Color vaultBg = collectedMult > 0 ? new Color(38, 22, 54, 255) : new Color(16, 20, 32, 255);
         Color vaultBorder = collectedMult > 0 ? Color.Gold : new Color(255, 255, 255, 25);
         Raylib.DrawRectangleRec(vaultBox, vaultBg);
-        Raylib.DrawRectangleLinesEx(vaultBox, 2, vaultBorder);
+        Raylib.DrawRectangleLinesEx(vaultBox, 3, vaultBorder);
 
         if (_symbolTextures.TryGetValue(SlotSymbolType.Bomb, out var bombTex) && bombTex.Id != 0)
         {
             Rectangle src = new(0, 0, bombTex.Width, bombTex.Height);
-            Rectangle dest = new(65 + (240 - 58) / 2f, 142, 58, 58);
+            Rectangle dest = new(98 + (360 - 87) / 2f, 213, 87, 87);
             Color bombTint = collectedMult > 0 ? Color.White : new Color(140, 140, 140, 160);
             Raylib.DrawTexturePro(bombTex, src, dest, Vector2.Zero, 0f, bombTint);
         }
@@ -988,54 +988,54 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
         if (collectedMult > 0)
         {
             string multText = $"{collectedMult}x";
-            UiFont.DrawCenteredInRect(multText, new Rectangle(65, 206, 240, 44), 32, Color.Yellow, isBold: true);
-            UiFont.DrawCenteredInRect("ACTIVE BOOST", new Rectangle(65, 256, 240, 20), 12, Color.Lime, isBold: true);
+            UiFont.DrawCenteredInRect(multText, new Rectangle(98, 309, 360, 66), 48, Color.Yellow, isBold: true);
+            UiFont.DrawCenteredInRect("ACTIVE BOOST", new Rectangle(98, 384, 360, 30), 18, Color.Lime, isBold: true);
         }
         else
         {
-            UiFont.DrawCenteredInRect("VAULT EMPTY", new Rectangle(65, 212, 240, 24), 15, Color.Gray, isBold: true);
-            UiFont.DrawCenteredInRect("Unlocks on Cascade 2+", new Rectangle(65, 246, 240, 20), 11, new Color(160, 170, 190, 255), isBold: false);
+            UiFont.DrawCenteredInRect("VAULT EMPTY", new Rectangle(98, 318, 360, 36), 22.5f, Color.Gray, isBold: true);
+            UiFont.DrawCenteredInRect("Unlocks on Cascade 2+", new Rectangle(98, 369, 360, 30), 16.5f, new Color(160, 170, 190, 255), isBold: false);
         }
 
         // Cascade streak indicator
-        Rectangle streakBox = new(65, 305, 240, 60);
+        Rectangle streakBox = new(98, 458, 360, 90);
         Raylib.DrawRectangleRec(streakBox, new Color(18, 24, 38, 255));
-        Raylib.DrawRectangleLinesEx(streakBox, 1, new Color(255, 255, 255, 25));
-        UiFont.DrawCenteredInRect("CASCADE STREAK", new Rectangle(65, 312, 240, 14), 10, Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(streakBox, 1.5f, new Color(255, 255, 255, 25));
+        UiFont.DrawCenteredInRect("CASCADE STREAK", new Rectangle(98, 468, 360, 21), 15, Color.LightGray, isBold: true);
         string streakText = _tumbleCombo > 1 ? $"CASCADE {_tumbleCombo}" : "BASE SPIN";
         Color streakColor = _tumbleCombo > 1 ? Color.Lime : Color.LightGray;
-        UiFont.DrawCenteredInRect(streakText, new Rectangle(65, 332, 240, 24), 16, streakColor, isBold: true);
+        UiFont.DrawCenteredInRect(streakText, new Rectangle(98, 498, 360, 36), 24, streakColor, isBold: true);
 
         // Round Win Accumulator Box
-        Rectangle roundBox = new(65, 380, 240, 145);
+        Rectangle roundBox = new(98, 570, 360, 218);
         Raylib.DrawRectangleRec(roundBox, new Color(14, 18, 30, 255));
-        Raylib.DrawRectangleLinesEx(roundBox, 2, Color.Gold);
-        UiFont.DrawCenteredInRect("ROUND WIN", new Rectangle(65, 400, 240, 20), 13, Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(roundBox, 3, Color.Gold);
+        UiFont.DrawCenteredInRect("ROUND WIN", new Rectangle(98, 600, 360, 30), 19.5f, Color.LightGray, isBold: true);
         string winStr = $"{_displayWin:N2}";
-        UiFont.DrawCenteredInRect(winStr, new Rectangle(65, 436, 240, 48), 26, Color.Gold, isBold: true);
+        UiFont.DrawCenteredInRect(winStr, new Rectangle(98, 654, 360, 72), 39, Color.Gold, isBold: true);
     }
 
     private void DrawRightPaytable()
     {
-        Rectangle guideRect = new(955, 85, 275, 460);
+        Rectangle guideRect = new(1433, 128, 413, 690);
         Raylib.DrawRectangleRec(guideRect, new Color(20, 26, 44, 235));
-        Raylib.DrawRectangleLinesEx(guideRect, 2, new Color(255, 180, 0, 150));
+        Raylib.DrawRectangleLinesEx(guideRect, 3, new Color(255, 180, 0, 150));
 
-        UiFont.DrawCenteredInRect("PAY ANYWHERE RULES", new Rectangle(955, 95, 275, 30), 16, Color.Gold, isBold: true);
+        UiFont.DrawCenteredInRect("PAY ANYWHERE RULES", new Rectangle(1433, 143, 413, 45), 24, Color.Gold, isBold: true);
 
         string rules = "• Match 8+ identical symbols anywhere on the grid to win.\n\n• Winning symbols explode and trigger cascading tumbles.\n\n• Multiplier BOMBS boost tumble wins on Cascade 2+!\n\n• 4+ Lollipops award Scatter Bonus!";
 
-        float textX = 975;
-        float textY = 135;
-        float maxWidth = 275 - 40; // 235px cleanly wrapped inside the 275px box
-        float textHeight = UiFont.DrawWrappedText(rules, textX, textY, maxWidth, 13, new Color(210, 220, 240, 255), isBold: false, lineSpacing: 4f);
+        float textX = 1463;
+        float textY = 203;
+        float maxWidth = 413 - 60;
+        float textHeight = UiFont.DrawWrappedText(rules, textX, textY, maxWidth, 19.5f, new Color(210, 220, 240, 255), isBold: false, lineSpacing: 6f);
 
-        float symY = textY + textHeight + 16f;
-        Raylib.DrawLine((int)textX, (int)symY - 8, (int)(textX + maxWidth), (int)symY - 8, new Color(255, 255, 255, 25));
+        float symY = textY + textHeight + 24f;
+        Raylib.DrawLine((int)textX, (int)symY - 12, (int)(textX + maxWidth), (int)symY - 12, new Color(255, 255, 255, 25));
 
         DrawSymbolRow(SlotSymbolType.Star, "8+ Pays 8x Bet", textX, symY);
-        DrawSymbolRow(SlotSymbolType.Swirl, "8+ Pays 5x Bet", textX, symY + 44);
-        DrawSymbolRow(SlotSymbolType.Heart, "8+ Pays 3.5x Bet", textX, symY + 88);
+        DrawSymbolRow(SlotSymbolType.Swirl, "8+ Pays 5x Bet", textX, symY + 66);
+        DrawSymbolRow(SlotSymbolType.Heart, "8+ Pays 3.5x Bet", textX, symY + 132);
     }
 
     private void DrawSymbolRow(SlotSymbolType sym, string desc, float x, float y)
@@ -1043,64 +1043,64 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
         if (_symbolTextures.TryGetValue(sym, out var tex) && tex.Id != 0)
         {
             Rectangle src = new(0, 0, tex.Width, tex.Height);
-            Rectangle dest = new(x, y, 42, 42);
+            Rectangle dest = new(x, y, 63, 63);
             Raylib.DrawTexturePro(tex, src, dest, Vector2.Zero, 0f, Color.White);
         }
-        UiFont.DrawText(desc, x + 50, y + 12, 13, Color.White, isBold: true);
+        UiFont.DrawText(desc, x + 75, y + 18, 19.5f, Color.White, isBold: true);
     }
 
     private void DrawBottomConsole()
     {
         // Console Base
-        Raylib.DrawRectangle(0, 570, GameCanvas.Width, 150, new Color(14, 18, 30, 255));
-        Raylib.DrawLine(0, 570, GameCanvas.Width, 570, new Color(255, 180, 0, 120));
+        Raylib.DrawRectangle(0, 855, GameCanvas.Width, 225, new Color(14, 18, 30, 255));
+        Raylib.DrawLine(0, 855, GameCanvas.Width, 855, new Color(255, 180, 0, 120));
 
         // Bet Minus
-        Rectangle minusRect = new(175, 620, 46, 46);
+        Rectangle minusRect = new(263, 930, 69, 69);
         UiImageButton.Draw(_texBtnMinus, minusRect);
 
         // Bet Pill
-        Rectangle betPill = new(230, 620, 105, 46);
+        Rectangle betPill = new(345, 930, 158, 69);
         Raylib.DrawRectangleRec(betPill, new Color(26, 34, 54, 255));
-        Raylib.DrawRectangleLinesEx(betPill, 1, Color.Gold);
-        UiFont.DrawCenteredInRect("BET", new Rectangle(230, 624, 105, 14), 10, Color.LightGray, isBold: true);
-        UiFont.DrawCenteredInRect($"{CurrentBet:0.00}", new Rectangle(230, 638, 105, 24), 16, Color.Gold, isBold: true);
+        Raylib.DrawRectangleLinesEx(betPill, 1.5f, Color.Gold);
+        UiFont.DrawCenteredInRect("BET", new Rectangle(345, 936, 158, 21), 15, Color.LightGray, isBold: true);
+        UiFont.DrawCenteredInRect($"{CurrentBet:0.00}", new Rectangle(345, 957, 158, 36), 24, Color.Gold, isBold: true);
 
         // Bet Plus
-        Rectangle plusRect = new(345, 620, 46, 46);
+        Rectangle plusRect = new(518, 930, 69, 69);
         UiImageButton.Draw(_texBtnPlus, plusRect);
 
         // Center Win Display
-        Rectangle winDisplay = new(430, 605, 340, 65);
+        Rectangle winDisplay = new(645, 908, 510, 98);
         Raylib.DrawRectangleRec(winDisplay, new Color(20, 28, 48, 255));
-        Raylib.DrawRectangleLinesEx(winDisplay, 2, new Color(255, 215, 0, 220));
-        UiFont.DrawCenteredInRect("WIN COINS", new Rectangle(430, 610, 340, 16), 11, Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(winDisplay, 3, new Color(255, 215, 0, 220));
+        UiFont.DrawCenteredInRect("WIN COINS", new Rectangle(645, 915, 510, 24), 16.5f, Color.LightGray, isBold: true);
         string winFormatted = $"{_displayWin:N2}";
         Color winColor = _displayWin > 0 ? Color.Gold : Color.Gray;
-        UiFont.DrawCenteredInRect(winFormatted, new Rectangle(430, 626, 340, 38), 26, winColor, isBold: true);
+        UiFont.DrawCenteredInRect(winFormatted, new Rectangle(645, 939, 510, 57), 39, winColor, isBold: true);
 
         // Turbo Toggle
-        Rectangle turboRect = new(810, 625, 84, 36);
+        Rectangle turboRect = new(1215, 938, 126, 54);
         UiImageButton.Draw(_texBtnTurbo, turboRect);
         if (_turboMode)
         {
-            Raylib.DrawRectangleLinesEx(turboRect, 2, Color.Lime);
+            Raylib.DrawRectangleLinesEx(turboRect, 3, Color.Lime);
         }
 
         // Auto Spin Toggle (Same toggle style as Turbo button)
-        Rectangle autoRect = new(905, 625, 84, 36);
+        Rectangle autoRect = new(1358, 938, 126, 54);
         UiImageButton.Draw(_texBtnAuto, autoRect);
         if (_autoSpin)
         {
-            Raylib.DrawRectangleLinesEx(autoRect, 2, Color.Lime);
+            Raylib.DrawRectangleLinesEx(autoRect, 3, Color.Lime);
         }
 
         // Big Spin Button
-        Rectangle spinRect = new(1015, 595, 96, 96);
+        Rectangle spinRect = new(1523, 893, 144, 144);
         UiImageButton.Draw(_texBtnSpin, spinRect);
         if (_autoSpin)
         {
-            Raylib.DrawCircleLines(1015 + 48, 595 + 48, 48, Color.Lime);
+            Raylib.DrawCircleLines(1523 + 72, 893 + 72, 72, Color.Lime);
         }
     }
 
@@ -1112,28 +1112,28 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
         // Draw Win Banner
         if (_winBanner.Id != 0)
         {
-            float bannerW = 540;
-            float bannerH = 150;
+            float bannerW = 810;
+            float bannerH = 225;
             Rectangle src = new(0, 0, _winBanner.Width, _winBanner.Height);
-            Rectangle dest = new((GameCanvas.Width - bannerW) / 2f, 180, bannerW, bannerH);
+            Rectangle dest = new((GameCanvas.Width - bannerW) / 2f, 270, bannerW, bannerH);
             Raylib.DrawTexturePro(_winBanner, src, dest, Vector2.Zero, 0f, Color.White);
         }
         else
         {
-            UiFont.DrawCenteredText(_winTierName, 180, 52, Color.Gold, isBold: true);
+            UiFont.DrawCenteredText(_winTierName, 270, 78, Color.Gold, isBold: true);
         }
 
         // Win Amount
         string winAmountStr = $"{_roundWin:N2} COINS!";
-        UiFont.DrawCenteredText(winAmountStr, 350, 48, Color.Gold, isBold: true);
-        UiFont.DrawCenteredText("CLICK ANYWHERE TO CONTINUE", 430, 16, Color.LightGray, isBold: false);
+        UiFont.DrawCenteredText(winAmountStr, 525, 72, Color.Gold, isBold: true);
+        UiFont.DrawCenteredText("CLICK ANYWHERE TO CONTINUE", 645, 24, Color.LightGray, isBold: false);
     }
 
     // Modal Dialog Layout Rectangles
-    private static readonly Rectangle ModalBoxRect = new(390, 220, 500, 280);
-    private static readonly Rectangle ModalDepositBtnRect = new(420, 425, 205, 48);
-    private static readonly Rectangle ModalLobbyBtnRect = new(655, 425, 205, 48);
-    private static readonly Rectangle ModalCloseBtnRect = new(854, 232, 26, 26);
+    private static readonly Rectangle ModalBoxRect = new(585, 330, 750, 420);
+    private static readonly Rectangle ModalDepositBtnRect = new(630, 638, 308, 72);
+    private static readonly Rectangle ModalLobbyBtnRect = new(983, 638, 308, 72);
+    private static readonly Rectangle ModalCloseBtnRect = new(1281, 348, 39, 39);
 
     private void UpdateOutOfCoinsModal()
     {
@@ -1167,41 +1167,41 @@ public sealed class SlotsMinigame : IMinigame, IDepositRequester
 
         // 2. Modal Card Frame
         Raylib.DrawRectangleRec(ModalBoxRect, new Color(18, 24, 38, 255));
-        Raylib.DrawRectangleLinesEx(ModalBoxRect, 2, Color.Gold);
+        Raylib.DrawRectangleLinesEx(ModalBoxRect, 3, Color.Gold);
 
         // 3. Close Button [X]
         bool closeHov = UiImageButton.IsHovered(ModalCloseBtnRect);
         Raylib.DrawRectangleRec(ModalCloseBtnRect, closeHov ? new Color(220, 38, 38, 200) : new Color(36, 44, 62, 255));
-        Raylib.DrawRectangleLinesEx(ModalCloseBtnRect, 1, closeHov ? Color.Red : Color.Gray);
-        UiFont.DrawCenteredInRect("X", ModalCloseBtnRect, 14, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalCloseBtnRect, 1.5f, closeHov ? Color.Red : Color.Gray);
+        UiFont.DrawCenteredInRect("X", ModalCloseBtnRect, 21, Color.White, isBold: true);
 
         // 4. Header Title & Icon
-        Rectangle titleRect = new(ModalBoxRect.X, ModalBoxRect.Y + 28, ModalBoxRect.Width, 34);
-        UiFont.DrawCenteredInRect("! OUT OF COINS !", titleRect, 24, Color.Gold, isBold: true);
+        Rectangle titleRect = new(ModalBoxRect.X, ModalBoxRect.Y + 42, ModalBoxRect.Width, 51);
+        UiFont.DrawCenteredInRect("! OUT OF COINS !", titleRect, 36, Color.Gold, isBold: true);
 
         // 5. Message Body
-        Rectangle msg1Rect = new(ModalBoxRect.X + 20, ModalBoxRect.Y + 80, ModalBoxRect.Width - 40, 28);
-        UiFont.DrawCenteredInRect($"You need {CurrentBet:N2} coins to spin.", msg1Rect, 18, Color.White);
+        Rectangle msg1Rect = new(ModalBoxRect.X + 30, ModalBoxRect.Y + 120, ModalBoxRect.Width - 60, 42);
+        UiFont.DrawCenteredInRect($"You need {CurrentBet:N2} coins to spin.", msg1Rect, 27, Color.White);
 
-        Rectangle msg2Rect = new(ModalBoxRect.X + 20, ModalBoxRect.Y + 115, ModalBoxRect.Width - 40, 26);
-        UiFont.DrawCenteredInRect($"Your current balance: {_currency.Balance:N2} coins", msg2Rect, 16, Color.LightGray);
+        Rectangle msg2Rect = new(ModalBoxRect.X + 30, ModalBoxRect.Y + 172, ModalBoxRect.Width - 60, 39);
+        UiFont.DrawCenteredInRect($"Your current balance: {_currency.Balance:N2} coins", msg2Rect, 24, Color.LightGray);
 
-        Rectangle hintRect = new(ModalBoxRect.X + 20, ModalBoxRect.Y + 152, ModalBoxRect.Width - 40, 22);
-        UiFont.DrawCenteredInRect("Deposit coins now or return to the main lobby.", hintRect, 14, new Color(160, 174, 192, 255));
+        Rectangle hintRect = new(ModalBoxRect.X + 30, ModalBoxRect.Y + 228, ModalBoxRect.Width - 60, 33);
+        UiFont.DrawCenteredInRect("Deposit coins now or return to the main lobby.", hintRect, 21, new Color(160, 174, 192, 255));
 
         // 6. Action Buttons
         // Deposit More
         bool depHov = UiImageButton.IsHovered(ModalDepositBtnRect);
         Color depBg = depHov ? new Color(40, 200, 100, 255) : new Color(34, 160, 80, 255);
         Raylib.DrawRectangleRec(ModalDepositBtnRect, depBg);
-        Raylib.DrawRectangleLinesEx(ModalDepositBtnRect, 2, depHov ? Color.Lime : Color.Gold);
-        UiFont.DrawCenteredInRect("DEPOSIT MORE", ModalDepositBtnRect, 16, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalDepositBtnRect, 3, depHov ? Color.Lime : Color.Gold);
+        UiFont.DrawCenteredInRect("DEPOSIT MORE", ModalDepositBtnRect, 24, Color.White, isBold: true);
 
         // Return to Lobby
         bool lobHov = UiImageButton.IsHovered(ModalLobbyBtnRect);
         Color lobBg = lobHov ? new Color(71, 85, 105, 255) : new Color(51, 65, 85, 255);
         Raylib.DrawRectangleRec(ModalLobbyBtnRect, lobBg);
-        Raylib.DrawRectangleLinesEx(ModalLobbyBtnRect, 1, lobHov ? Color.White : Color.Gray);
-        UiFont.DrawCenteredInRect("RETURN TO LOBBY", ModalLobbyBtnRect, 15, Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalLobbyBtnRect, 1.5f, lobHov ? Color.White : Color.Gray);
+        UiFont.DrawCenteredInRect("RETURN TO LOBBY", ModalLobbyBtnRect, 22.5f, Color.LightGray, isBold: true);
     }
 }

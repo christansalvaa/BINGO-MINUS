@@ -22,13 +22,13 @@ internal static class UiFont
 
         if (File.Exists(regularPath))
         {
-            _regular = Raylib.LoadFontEx(regularPath, 64, null, 0);
+            _regular = Raylib.LoadFontEx(regularPath, 96, null, 0);
             Raylib.SetTextureFilter(_regular.Texture, TextureFilter.Bilinear);
         }
 
         if (File.Exists(boldPath))
         {
-            _bold = Raylib.LoadFontEx(boldPath, 64, null, 0);
+            _bold = Raylib.LoadFontEx(boldPath, 96, null, 0);
             Raylib.SetTextureFilter(_bold.Texture, TextureFilter.Bilinear);
         }
 

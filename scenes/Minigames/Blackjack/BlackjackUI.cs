@@ -9,7 +9,7 @@ namespace BINGO_MINUS;
 public class BlackjackUI
 {
     private const string AssetDir = "scenes/Minigames/Blackjack/Assets/";
-    private const int CardWidth = 71, CardOverlap = 30;
+    private const int CardWidth = 107, CardOverlap = 45;
 
     private static readonly string[] Suits = { "Spades", "Hearts", "Diamonds", "Clubs" };
     private static readonly string[] RankNames = { "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace" };
@@ -26,19 +26,19 @@ public class BlackjackUI
     public readonly int[] ChipValues = { 1, 5, 25, 50, 100, 500, 1000, 5000 };
 
     public static int CenterX => GameCanvas.Width / 2;
-    public static int BtnY => GameCanvas.Height - 70;
+    public static int BtnY => GameCanvas.Height - 105;
 
-    public static Rectangle BtnBack => new(20, 11, 130, 40);
-    public static Rectangle BtnDeal => new(CenterX - 105, GameCanvas.Height - 160, 100, 50);
-    public static Rectangle BtnClear => new(CenterX + 5, GameCanvas.Height - 160, 100, 50);
-    public static Rectangle BtnStand => new(CenterX - 160, BtnY, 100, 50);
-    public static Rectangle BtnDouble => new(CenterX - 50, BtnY, 100, 50);
-    public static Rectangle BtnHit => new(CenterX + 60, BtnY, 100, 50);
-    public static Rectangle BtnSplit => new(CenterX + 170, BtnY, 100, 50);
-    public static Rectangle BtnPlayAgain => new(CenterX - 100, BtnY - 20, 200, 50);
+    public static Rectangle BtnBack => new(30, 17, 195, 60);
+    public static Rectangle BtnDeal => new(CenterX - 158, GameCanvas.Height - 240, 150, 75);
+    public static Rectangle BtnClear => new(CenterX + 8, GameCanvas.Height - 240, 150, 75);
+    public static Rectangle BtnStand => new(CenterX - 240, BtnY, 150, 75);
+    public static Rectangle BtnDouble => new(CenterX - 75, BtnY, 150, 75);
+    public static Rectangle BtnHit => new(CenterX + 90, BtnY, 150, 75);
+    public static Rectangle BtnSplit => new(CenterX + 255, BtnY, 150, 75);
+    public static Rectangle BtnPlayAgain => new(CenterX - 150, BtnY - 30, 300, 75);
 
     public static Rectangle GetChipBounds(int i, int total) =>
-        new(CenterX - total * 30 + i * 60, GameCanvas.Height - 80, 50, 50);
+        new(CenterX - total * 45 + i * 90, GameCanvas.Height - 120, 75, 75);
 
 
     private static Texture2D Load(string file, bool smooth = false)
@@ -97,14 +97,14 @@ public class BlackjackUI
     public void DrawBalance(decimal balance)
     {
         string text = $"COINS  {balance:0.00}";
-        DrawText(text, GameCanvas.Width - 20 - Raylib.MeasureText(text, 22), 28, 22, Color.Gold);
+        DrawText(text, GameCanvas.Width - 30 - Raylib.MeasureText(text, 33), 42, 33, Color.Gold);
     }
 
     public void DrawBettingPhase(decimal bet, decimal balance)
     {
         int midY = GameCanvas.Height / 2;
-        DrawCentered("Place Your Bet", CenterX, midY - 20, 30, Color.RayWhite);
-        DrawCentered($"Current Bet: {bet}", CenterX, midY + 20, 20, Color.Gold);
+        DrawCentered("Place Your Bet", CenterX, midY - 30, 45, Color.RayWhite);
+        DrawCentered($"Current Bet: {bet}", CenterX, midY + 30, 30, Color.Gold);
 
         if (bet > 0)
         {
@@ -122,30 +122,30 @@ public class BlackjackUI
 
     public void DrawHands(Hand dealer, List<Hand> hands, List<decimal> bets, bool hideDealerCard, int activeHandIndex)
     {
-        DrawScoreBubble(CenterX, 80, hideDealerCard ? dealer.Cards[0].GetValue() : dealer.GetScore());
-        DrawHandCards(dealer, CenterX, 110, hideDealerCard);
+        DrawScoreBubble(CenterX, 120, hideDealerCard ? dealer.Cards[0].GetValue() : dealer.GetScore());
+        DrawHandCards(dealer, CenterX, 165, hideDealerCard);
 
-        int firstX = CenterX - (hands.Count - 1) * 75;
+        int firstX = CenterX - (hands.Count - 1) * 112;
         for (int i = 0; i < hands.Count; i++)
         {
-            int x = firstX + i * 150;
+            int x = firstX + i * 225;
             bool isActive = (i == activeHandIndex);
 
             if (isActive && _cardBack.Id != 0) 
             {
                 int n = hands[i].Cards.Count;
-                int w = CardWidth + (n - 1) * CardOverlap + 12;
-                int h = _cardBack.Height + 12;
-                Rectangle hlBounds = new Rectangle(x - w / 2, 340 - 6, w, h);
+                int w = CardWidth + (n - 1) * CardOverlap + 18;
+                int h = (int)(_cardBack.Height * 1.5f) + 18;
+                Rectangle hlBounds = new Rectangle(x - w / 2, 510 - 9, w, h);
                 
                 Raylib.DrawRectangleRec(hlBounds, new Color(255, 215, 0, 25)); // Faint transparent fill
-                Raylib.DrawRectangleLinesEx(hlBounds, 2, new Color(255, 215, 0, 180)); // Crisp gold border
+                Raylib.DrawRectangleLinesEx(hlBounds, 3, new Color(255, 215, 0, 180)); // Crisp gold border
             }
 
-            DrawScoreBubble(x, 310, hands[i].GetScore(), isActive);
-            DrawHandCards(hands[i], x, 340, false);
-            DrawCentered($"Bet: {bets[i]}", x, 460, 16, Color.Gold);
-            DrawTex(_chips[5], x - 25, 480, Color.White);
+            DrawScoreBubble(x, 465, hands[i].GetScore(), isActive);
+            DrawHandCards(hands[i], x, 510, false);
+            DrawCentered($"Bet: {bets[i]}", x, 690, 24, Color.Gold);
+            DrawTex(_chips[5], x - 38, 720, Color.White);
         }
     }
 
@@ -161,7 +161,7 @@ public class BlackjackUI
 
     public void DrawGameOver(string message)
     {
-        DrawCentered(message, CenterX, 240, 40, Color.Gold);
+        DrawCentered(message, CenterX, 360, 60, Color.Gold);
         UiButton.Draw(BtnPlayAgain, "PLAY AGAIN", Green);
     }
 
@@ -181,7 +181,7 @@ public class BlackjackUI
 
     private static void DrawTex(Texture2D tex, int x, int y, Color tint)
     {
-        if (tex.Id != 0) Raylib.DrawTexture(tex, x, y, tint);
+        if (tex.Id != 0) Raylib.DrawTextureEx(tex, new Vector2(x, y), 0f, 1.5f, tint);
     }
 
     private static void DrawScoreBubble(int cx, int y, int score, bool isActive = false)
@@ -189,16 +189,16 @@ public class BlackjackUI
         Color bgColor = isActive ? new Color(50, 60, 40, 255) : new Color(30, 40, 30, 220);
         Color borderColor = isActive ? Color.Gold : new Color(200, 180, 100, 255);
         
-        Raylib.DrawCircle(cx, y, 18, bgColor);
-        Raylib.DrawCircleLines(cx, y, 18, borderColor);
+        Raylib.DrawCircle(cx, y, 27, bgColor);
+        Raylib.DrawCircleLines(cx, y, 27, borderColor);
         
         string s = score.ToString();
-        Raylib.DrawText(s, cx - Raylib.MeasureText(s, 18) / 2, y - 9, 18, Color.RayWhite);
+        Raylib.DrawText(s, cx - Raylib.MeasureText(s, 27) / 2, y - 14, 27, Color.RayWhite);
     }
 
     private static void DrawText(string text, int x, int y, int size, Color color)
     {
-        Raylib.DrawText(text, x + 2, y + 2, size, new Color(0, 0, 0, 180));
+        Raylib.DrawText(text, x + 3, y + 3, size, new Color(0, 0, 0, 180));
         Raylib.DrawText(text, x, y, size, color);
     }
 

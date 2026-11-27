@@ -11,29 +11,29 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
     private static readonly int[] ChipValues = [1, 5, 25, 50, 100, 500, 1000];
 
     // Top Panel Rectangles
-    private static readonly Rectangle ShoeBoxRect = new(44, 92, 336, 72);
-    private static readonly Rectangle FastToggleRect = new(392, 106, 138, 44);
-    private static readonly Rectangle RoadmapRect = new(780, 92, 456, 72);
+    private static readonly Rectangle ShoeBoxRect = new(66, 138, 504, 108);
+    private static readonly Rectangle FastToggleRect = new(588, 159, 207, 66);
+    private static readonly Rectangle RoadmapRect = new(1170, 138, 684, 108);
 
     // Betting Zone Rectangles on Felt
-    private static readonly Rectangle SpotPlayerPairRect = new(52, 384, 182, 148);
-    private static readonly Rectangle SpotPlayerRect = new(248, 376, 266, 160);
-    private static readonly Rectangle SpotTieRect = new(528, 376, 224, 160);
-    private static readonly Rectangle SpotBankerRect = new(766, 376, 266, 160);
-    private static readonly Rectangle SpotBankerPairRect = new(1046, 384, 182, 148);
+    private static readonly Rectangle SpotPlayerPairRect = new(78, 576, 273, 222);
+    private static readonly Rectangle SpotPlayerRect = new(372, 564, 399, 240);
+    private static readonly Rectangle SpotTieRect = new(792, 564, 336, 240);
+    private static readonly Rectangle SpotBankerRect = new(1149, 564, 399, 240);
+    private static readonly Rectangle SpotBankerPairRect = new(1569, 576, 273, 222);
 
     // Bottom Control Bar Rectangles
-    private static readonly Rectangle ControlBarRect = new(24, 560, 1232, 142);
-    private static readonly Rectangle ClearBtnRect = new(762, 578, 104, 46);
-    private static readonly Rectangle DoubleBtnRect = new(874, 578, 104, 46);
-    private static readonly Rectangle RebetBtnRect = new(762, 634, 216, 46);
-    private static readonly Rectangle DealBtnRect = new(994, 578, 240, 102);
+    private static readonly Rectangle ControlBarRect = new(36, 840, 1848, 213);
+    private static readonly Rectangle ClearBtnRect = new(1143, 867, 156, 69);
+    private static readonly Rectangle DoubleBtnRect = new(1311, 867, 156, 69);
+    private static readonly Rectangle RebetBtnRect = new(1143, 951, 324, 69);
+    private static readonly Rectangle DealBtnRect = new(1491, 867, 360, 153);
 
     // Out of Coins Modal
-    private static readonly Rectangle ModalBoxRect = new(390, 220, 500, 280);
-    private static readonly Rectangle ModalDepositBtnRect = new(420, 425, 205, 48);
-    private static readonly Rectangle ModalLobbyBtnRect = new(655, 425, 205, 48);
-    private static readonly Rectangle ModalCloseBtnRect = new(854, 232, 26, 26);
+    private static readonly Rectangle ModalBoxRect = new(585, 330, 750, 420);
+    private static readonly Rectangle ModalDepositBtnRect = new(630, 638, 308, 72);
+    private static readonly Rectangle ModalLobbyBtnRect = new(983, 638, 308, 72);
+    private static readonly Rectangle ModalCloseBtnRect = new(1281, 348, 39, 39);
 
     private enum BaccaratState
     {
@@ -226,9 +226,9 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
 
     private static Vector2 GetChipCenter(int index)
     {
-        float startX = 248f;
-        float spacing = 74f;
-        return new Vector2(startX + index * spacing, 634f);
+        float startX = 372f;
+        float spacing = 111f;
+        return new Vector2(startX + index * spacing, 951f);
     }
 
     // ---------------- UPDATE ----------------
@@ -280,7 +280,7 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
         for (int i = 0; i < ChipValues.Length; i++)
         {
             Vector2 c = GetChipCenter(i);
-            if (Vector2.Distance(mouse, c) <= 30f && Raylib.IsMouseButtonPressed(MouseButton.Left))
+            if (Vector2.Distance(mouse, c) <= 45f && Raylib.IsMouseButtonPressed(MouseButton.Left))
             {
                 _selectedChipIndex = i;
                 PlaySnd(_sndChip, 0.55f, 0.9f + i * 0.04f);
@@ -576,18 +576,18 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
 
     private static Vector2 GetPlayerCardTarget(int index) => index switch
     {
-        0 => new Vector2(362, 266),
-        1 => new Vector2(466, 266),
-        2 => new Vector2(236, 266), // Sideways 3rd card on outer left
-        _ => new Vector2(362, 266)
+        0 => new Vector2(543, 399),
+        1 => new Vector2(699, 399),
+        2 => new Vector2(354, 399), // Sideways 3rd card on outer left
+        _ => new Vector2(543, 399)
     };
 
     private static Vector2 GetBankerCardTarget(int index) => index switch
     {
-        0 => new Vector2(814, 266),
-        1 => new Vector2(918, 266),
-        2 => new Vector2(1044, 266), // Sideways 3rd card on outer right
-        _ => new Vector2(814, 266)
+        0 => new Vector2(1221, 399),
+        1 => new Vector2(1377, 399),
+        2 => new Vector2(1566, 399), // Sideways 3rd card on outer right
+        _ => new Vector2(1221, 399)
     };
 
     private void UpdateDealing(float dt)
@@ -811,17 +811,17 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
         foreach (var s in _sparks)
         {
             float a = Math.Clamp(s.Life / s.MaxLife, 0f, 1f);
-            Raylib.DrawCircleV(s.Position, 4.2f * a, new Color(s.Color.R, s.Color.G, s.Color.B, (byte)(255 * a)));
+            Raylib.DrawCircleV(s.Position, 6.3f * a, new Color(s.Color.R, s.Color.G, s.Color.B, (byte)(255 * a)));
         }
 
         // Shuffle toast
         if (_shuffleNoticeTimer > 0f)
         {
             float a = Math.Min(1f, _shuffleNoticeTimer);
-            Rectangle toast = new(470, 174, 340, 34);
+            Rectangle toast = new(705, 261, 510, 51);
             Raylib.DrawRectangleRounded(toast, 0.4f, 6, new Color(18, 26, 44, (int)(235 * a)));
-            Raylib.DrawRectangleRoundedLinesEx(toast, 0.4f, 6, 1.5f, new Color(255, 215, 0, (int)(220 * a)));
-            UiFont.DrawCenteredInRect(_shuffleNotice, toast, 13, new Color(255, 215, 0, (int)(255 * a)), isBold: true);
+            Raylib.DrawRectangleRoundedLinesEx(toast, 0.4f, 6, 2.25f, new Color(255, 215, 0, (int)(220 * a)));
+            UiFont.DrawCenteredInRect(_shuffleNotice, toast, 19.5f, new Color(255, 215, 0, (int)(255 * a)), isBold: true);
         }
 
         bool backClicked = BingoPlusHeader.Draw("BACCARAT", _currency);
@@ -842,11 +842,11 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
         Raylib.DrawRectangleRounded(ShoeBoxRect, 0.14f, 6, new Color(11, 16, 28, 225));
         Raylib.DrawRectangleRoundedLinesEx(ShoeBoxRect, 0.14f, 6, 1.5f, new Color(235, 195, 75, 115));
 
-        UiFont.DrawText("8-DECK CASINO SHOE", ShoeBoxRect.X + 14, ShoeBoxRect.Y + 10, 11, Color.Gold, isBold: true);
-        UiFont.DrawText($"{_shoe.Remaining} / {BaccaratShoe.TotalCards} CARDS LEFT", ShoeBoxRect.X + 14, ShoeBoxRect.Y + 26, 14, Color.White, isBold: true);
+        UiFont.DrawText("8-DECK CASINO SHOE", ShoeBoxRect.X + 21, ShoeBoxRect.Y + 15, 16.5f, Color.Gold, isBold: true);
+        UiFont.DrawText($"{_shoe.Remaining} / {BaccaratShoe.TotalCards} CARDS LEFT", ShoeBoxRect.X + 21, ShoeBoxRect.Y + 39, 21, Color.White, isBold: true);
 
         // Shoe progress bar
-        Rectangle barBg = new(ShoeBoxRect.X + 14, ShoeBoxRect.Y + 50, ShoeBoxRect.Width - 28, 10);
+        Rectangle barBg = new(ShoeBoxRect.X + 21, ShoeBoxRect.Y + 75, ShoeBoxRect.Width - 42, 15);
         Raylib.DrawRectangleRounded(barBg, 0.5f, 4, new Color(28, 36, 54, 255));
         float pct = _shoe.Remaining / (float)BaccaratShoe.TotalCards;
         Raylib.DrawRectangleRounded(new Rectangle(barBg.X, barBg.Y, barBg.Width * pct, barBg.Height), 0.5f, 4,
@@ -857,8 +857,8 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
         Color fastBg = _fastMode ? new Color(26, 56, 40, 240) : new Color(16, 22, 36, 230);
         Color fastBorder = _fastMode ? Color.Lime : (fastHov ? Color.Gold : new Color(255, 255, 255, 45));
         Raylib.DrawRectangleRounded(FastToggleRect, 0.25f, 6, fastBg);
-        Raylib.DrawRectangleRoundedLinesEx(FastToggleRect, 0.25f, 6, _fastMode ? 2f : 1.2f, fastBorder);
-        UiFont.DrawCenteredInRect(_fastMode ? "FAST: ON" : "FAST: OFF", FastToggleRect, 13, _fastMode ? Color.Lime : Color.LightGray, isBold: true);
+        Raylib.DrawRectangleRoundedLinesEx(FastToggleRect, 0.25f, 6, _fastMode ? 3f : 1.8f, fastBorder);
+        UiFont.DrawCenteredInRect(_fastMode ? "FAST: ON" : "FAST: OFF", FastToggleRect, 19.5f, _fastMode ? Color.Lime : Color.LightGray, isBold: true);
 
         // Right: Authentic Bead Plate Roadmap
         BaccaratRenderer.DrawRoadmapPanel(RoadmapRect, _history);
@@ -876,10 +876,10 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
         bool bankerWon = _state == BaccaratState.Result && _roundOutcome == BaccaratOutcome.BankerWin;
 
         // PLAYER Header & Score Bubble
-        DrawSideHeader("PLAYER", 386, 174, new Color(59, 130, 246, 255), hasPlayerCards ? visiblePlayerScore : null, playerWon);
+        DrawSideHeader("PLAYER", 579, 261, new Color(59, 130, 246, 255), hasPlayerCards ? visiblePlayerScore : null, playerWon);
 
         // BANKER Header & Score Bubble
-        DrawSideHeader("BANKER", 894, 174, new Color(239, 68, 68, 255), hasBankerCards ? visibleBankerScore : null, bankerWon);
+        DrawSideHeader("BANKER", 1341, 261, new Color(239, 68, 68, 255), hasBankerCards ? visibleBankerScore : null, bankerWon);
 
         // Card slot outlines when table is waiting for bets
         if (_state == BaccaratState.Betting)
@@ -889,8 +889,8 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
             DrawCardPlaceholder(GetBankerCardTarget(0));
             DrawCardPlaceholder(GetBankerCardTarget(1));
 
-            UiFont.DrawCenteredInRect("PLACE YOUR BETS ON THE FELT", new Rectangle(460, 226, 360, 32), 18, Color.Gold, isBold: true);
-            UiFont.DrawCenteredInRect("Click a chip below, then click PLAYER, BANKER, TIE, or PAIRS", new Rectangle(430, 260, 420, 24), 13, new Color(210, 230, 220, 220));
+            UiFont.DrawCenteredInRect("PLACE YOUR BETS ON THE FELT", new Rectangle(690, 339, 540, 48), 27, Color.Gold, isBold: true);
+            UiFont.DrawCenteredInRect("Click a chip below, then click PLAYER, BANKER, TIE, or PAIRS", new Rectangle(645, 390, 630, 36), 19.5f, new Color(210, 230, 220, 220));
         }
 
         // Draw Player Cards
@@ -910,22 +910,22 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
         // Center VS or Result Banner
         if (_state == BaccaratState.Dealing)
         {
-            Raylib.DrawCircle(640, 266, 26, new Color(14, 22, 34, 220));
-            Raylib.DrawCircleLines(640, 266, 26, new Color(235, 195, 75, 160));
-            UiFont.DrawCenteredInRect("VS", new Rectangle(614, 240, 52, 52), 18, Color.Gold, isBold: true);
+            Raylib.DrawCircle(960, 399, 39, new Color(14, 22, 34, 220));
+            Raylib.DrawCircleLines(960, 399, 39, new Color(235, 195, 75, 160));
+            UiFont.DrawCenteredInRect("VS", new Rectangle(921, 360, 78, 78), 27, Color.Gold, isBold: true);
         }
         else if (_state == BaccaratState.Result)
         {
             float pulse = 0.5f + 0.5f * MathF.Sin(_resultPulse);
-            Rectangle banner = new(470, 218, 340, 96);
+            Rectangle banner = new(705, 327, 510, 144);
             Raylib.DrawRectangleRounded(banner, 0.2f, 8, new Color(10, 15, 26, 242));
-            Raylib.DrawRectangleRoundedLinesEx(banner, 0.2f, 8, 2.5f,
+            Raylib.DrawRectangleRoundedLinesEx(banner, 0.2f, 8, 3.75f,
                 new Color(_resultColor.R, _resultColor.G, _resultColor.B, (byte)(180 + 75 * pulse)));
 
-            UiFont.DrawCenteredInRect(_resultHeadline, new Rectangle(banner.X, banner.Y + 12, banner.Width, 34), 24, _resultColor, isBold: true);
+            UiFont.DrawCenteredInRect(_resultHeadline, new Rectangle(banner.X, banner.Y + 18, banner.Width, 51), 36, _resultColor, isBold: true);
 
             Color subCol = _lastRoundProfit > 0m ? Color.Lime : _lastRoundProfit == 0m && _lastRoundReturn > 0m ? Color.Gold : Color.LightGray;
-            UiFont.DrawCenteredInRect(_resultSubtext, new Rectangle(banner.X, banner.Y + 48, banner.Width, 24), 15, subCol, isBold: true);
+            UiFont.DrawCenteredInRect(_resultSubtext, new Rectangle(banner.X, banner.Y + 72, banner.Width, 36), 22.5f, subCol, isBold: true);
 
             // Show pair hit callouts if any
             if (_roundPlayerPair || _roundBankerPair)
@@ -936,7 +936,7 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
                     (true, false) => "PLAYER PAIR HIT! (11:1)",
                     _ => "BANKER PAIR HIT! (11:1)"
                 };
-                UiFont.DrawCenteredInRect(pairTag, new Rectangle(banner.X, banner.Y + 73, banner.Width, 18), 11, Color.Gold, isBold: true);
+                UiFont.DrawCenteredInRect(pairTag, new Rectangle(banner.X, banner.Y + 109.5f, banner.Width, 27), 16.5f, Color.Gold, isBold: true);
             }
         }
     }
@@ -956,17 +956,17 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
 
     private static void DrawSideHeader(string label, float centerX, float y, Color accent, int? score, bool isWinner)
     {
-        Rectangle pill = new(centerX - 102, y - 16, 204, 34);
+        Rectangle pill = new(centerX - 153, y - 24, 306, 51);
         Raylib.DrawRectangleRounded(pill, 0.5f, 8, isWinner ? new Color(36, 48, 32, 245) : new Color(12, 18, 30, 225));
-        Raylib.DrawRectangleRoundedLinesEx(pill, 0.5f, 8, isWinner ? 2.5f : 1.5f, isWinner ? Color.Gold : accent);
+        Raylib.DrawRectangleRoundedLinesEx(pill, 0.5f, 8, isWinner ? 3.75f : 2.25f, isWinner ? Color.Gold : accent);
 
-        UiFont.DrawText(label, pill.X + 20, pill.Y + 7, 17, accent, isBold: true);
+        UiFont.DrawText(label, pill.X + 30, pill.Y + 10.5f, 25.5f, accent, isBold: true);
 
         // Score circle on right end of pill
-        Vector2 sc = new(pill.X + pill.Width - 22, pill.Y + pill.Height * 0.5f);
-        Raylib.DrawCircleV(sc, 15, isWinner ? Color.Gold : accent);
+        Vector2 sc = new(pill.X + pill.Width - 33, pill.Y + pill.Height * 0.5f);
+        Raylib.DrawCircleV(sc, 22.5f, isWinner ? Color.Gold : accent);
         string scoreStr = score.HasValue ? score.Value.ToString() : "-";
-        UiFont.DrawCenteredInRect(scoreStr, new Rectangle(sc.X - 15, sc.Y - 15, 30, 30), 17,
+        UiFont.DrawCenteredInRect(scoreStr, new Rectangle(sc.X - 22.5f, sc.Y - 22.5f, 45, 45), 25.5f,
             isWinner ? Color.Black : Color.White, isBold: true);
     }
 
@@ -1022,46 +1022,46 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
         Raylib.DrawRectangleRoundedLinesEx(rect, 0.12f, 8, isWinningSpot || hovered ? 2.6f : 1.5f, border);
 
         // Title & Odds
-        float titleSize = spot is BaccaratBetSpot.PlayerPair or BaccaratBetSpot.BankerPair ? 16f : 21f;
-        UiFont.DrawCenteredInRect(title, new Rectangle(rect.X, rect.Y + 12, rect.Width, 26), titleSize,
+        float titleSize = spot is BaccaratBetSpot.PlayerPair or BaccaratBetSpot.BankerPair ? 24f : 31.5f;
+        UiFont.DrawCenteredInRect(title, new Rectangle(rect.X, rect.Y + 18, rect.Width, 39), titleSize,
             isWinningSpot ? Color.Gold : Color.White, isBold: true);
-        UiFont.DrawCenteredInRect(odds, new Rectangle(rect.X, rect.Y + 38, rect.Width, 18), 12,
+        UiFont.DrawCenteredInRect(odds, new Rectangle(rect.X, rect.Y + 57, rect.Width, 27), 18,
             new Color(240, 210, 120, 220), isBold: true);
 
         // Chip stack if wager placed
         if (bet > 0m)
         {
-            BaccaratRenderer.DrawBetStack(new Vector2(rect.X + rect.Width * 0.5f, rect.Y + rect.Height - 54f), bet);
+            BaccaratRenderer.DrawBetStack(new Vector2(rect.X + rect.Width * 0.5f, rect.Y + rect.Height - 81f), bet);
         }
         else if (hovered && _state == BaccaratState.Betting)
         {
-            UiFont.DrawCenteredInRect($"+ {ChipValues[_selectedChipIndex]} COINS", new Rectangle(rect.X, rect.Y + rect.Height - 44, rect.Width, 24),
-                12, new Color(255, 230, 140, 210), isBold: true);
+            UiFont.DrawCenteredInRect($"+ {ChipValues[_selectedChipIndex]} COINS", new Rectangle(rect.X, rect.Y + rect.Height - 66, rect.Width, 36),
+                18, new Color(255, 230, 140, 210), isBold: true);
         }
     }
 
     private void DrawControlBar()
     {
         Raylib.DrawRectangleRec(ControlBarRect, new Color(17, 23, 38, 255));
-        Raylib.DrawRectangleLinesEx(ControlBarRect, 2, new Color(235, 195, 75, 85));
+        Raylib.DrawRectangleLinesEx(ControlBarRect, 3, new Color(235, 195, 75, 85));
 
         // Left Readout Box (Total Bet + Last Payout)
         decimal totalBet = _state == BaccaratState.Betting ? GetTotalBet(_bets) : _activeRoundStake;
-        Rectangle statPanel = new(40, 576, 166, 110);
+        Rectangle statPanel = new(60, 864, 249, 165);
         Raylib.DrawRectangleRounded(statPanel, 0.12f, 6, new Color(11, 15, 25, 255));
-        Raylib.DrawRectangleRoundedLinesEx(statPanel, 0.12f, 6, 1f, new Color(255, 255, 255, 25));
+        Raylib.DrawRectangleRoundedLinesEx(statPanel, 0.12f, 6, 1.5f, new Color(255, 255, 255, 25));
 
-        UiFont.DrawText("TOTAL BET", statPanel.X + 12, statPanel.Y + 10, 10, Color.Gray, isBold: true);
-        UiFont.DrawText($"{totalBet:N2}", statPanel.X + 12, statPanel.Y + 23, 18, Color.Gold, isBold: true);
+        UiFont.DrawText("TOTAL BET", statPanel.X + 18, statPanel.Y + 15, 15, Color.Gray, isBold: true);
+        UiFont.DrawText($"{totalBet:N2}", statPanel.X + 18, statPanel.Y + 34.5f, 27, Color.Gold, isBold: true);
 
-        UiFont.DrawText("LAST RETURN", statPanel.X + 12, statPanel.Y + 54, 10, Color.Gray, isBold: true);
+        UiFont.DrawText("LAST RETURN", statPanel.X + 18, statPanel.Y + 81, 15, Color.Gray, isBold: true);
         Color retCol = _lastRoundReturn > 0m ? Color.Lime : Color.LightGray;
-        UiFont.DrawText($"{_lastRoundReturn:N2}", statPanel.X + 12, statPanel.Y + 67, 16, retCol, isBold: true);
+        UiFont.DrawText($"{_lastRoundReturn:N2}", statPanel.X + 18, statPanel.Y + 100.5f, 24, retCol, isBold: true);
 
-        UiFont.DrawText("L-Click: Bet | R-Click: Undo", statPanel.X + 8, statPanel.Y + 92, 9.5f, new Color(145, 158, 180, 255));
+        UiFont.DrawText("L-Click: Bet | R-Click: Undo", statPanel.X + 12, statPanel.Y + 138, 14.25f, new Color(145, 158, 180, 255));
 
         // Center: Interactive Casino Chip Rack
-        UiFont.DrawText("SELECT CHIP DENOMINATION", 374, 572, 11, new Color(165, 178, 200, 255), isBold: true);
+        UiFont.DrawText("SELECT CHIP DENOMINATION", 561, 858, 16.5f, new Color(165, 178, 200, 255), isBold: true);
 
         decimal currentPending = _state == BaccaratState.Betting ? GetTotalBet(_bets) : 0m;
         for (int i = 0; i < ChipValues.Length; i++)
@@ -1069,9 +1069,9 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
             Vector2 c = GetChipCenter(i);
             bool selected = i == _selectedChipIndex;
             bool affordable = currentPending + ChipValues[i] <= _currency.Balance;
-            if (selected) c.Y -= 8f;
+            if (selected) c.Y -= 12f;
 
-            BaccaratRenderer.DrawCasinoChip(c, 28f, ChipValues[i], selected, affordable);
+            BaccaratRenderer.DrawCasinoChip(c, 42f, ChipValues[i], selected, affordable);
         }
 
         // Right Buttons: CLEAR, 2X, REBET, DEAL
@@ -1079,13 +1079,13 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
         bool hasBets = GetTotalBet(_bets) > 0m;
         bool hasLastBets = GetTotalBet(_lastBets) > 0m;
 
-        DrawActionButton(ClearBtnRect, _state == BaccaratState.Result ? "NEW BET" : "CLEAR", 13,
+        DrawActionButton(ClearBtnRect, _state == BaccaratState.Result ? "NEW BET" : "CLEAR", 19.5f,
             new Color(110, 32, 38, 255), enabled: !isDealing && (hasBets || _state == BaccaratState.Result));
 
-        DrawActionButton(DoubleBtnRect, "2X BET", 13,
+        DrawActionButton(DoubleBtnRect, "2X BET", 19.5f,
             new Color(34, 52, 92, 255), enabled: !isDealing && (hasBets || (_state == BaccaratState.Result && hasLastBets)));
 
-        DrawActionButton(RebetBtnRect, "REBET PREVIOUS", 13,
+        DrawActionButton(RebetBtnRect, "REBET PREVIOUS", 19.5f,
             new Color(44, 54, 78, 255), enabled: !isDealing && hasLastBets);
 
         // Main DEAL / REBET & DEAL CTA
@@ -1113,12 +1113,12 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
                     : new Color(22, 163, 74, 255);
 
         Raylib.DrawRectangleRounded(DealBtnRect, 0.14f, 8, dealBg);
-        Raylib.DrawRectangleRoundedLinesEx(DealBtnRect, 0.14f, 8, 2f,
+        Raylib.DrawRectangleRoundedLinesEx(DealBtnRect, 0.14f, 8, 3f,
             dealEnabled ? (dealHov ? Color.White : Color.Gold) : new Color(90, 100, 120, 150));
 
-        UiFont.DrawCenteredInRect(dealTitle, new Rectangle(DealBtnRect.X, DealBtnRect.Y + 20, DealBtnRect.Width, 32), 23,
+        UiFont.DrawCenteredInRect(dealTitle, new Rectangle(DealBtnRect.X, DealBtnRect.Y + 30, DealBtnRect.Width, 48), 34.5f,
             dealEnabled ? Color.White : Color.Gray, isBold: true);
-        UiFont.DrawCenteredInRect(dealSub, new Rectangle(DealBtnRect.X, DealBtnRect.Y + 58, DealBtnRect.Width, 22), 12,
+        UiFont.DrawCenteredInRect(dealSub, new Rectangle(DealBtnRect.X, DealBtnRect.Y + 87, DealBtnRect.Width, 33), 18,
             dealEnabled ? new Color(225, 255, 232, 255) : Color.Gray, isBold: true);
     }
 
@@ -1167,27 +1167,27 @@ public sealed class BaccaratMinigame : IMinigame, IDepositRequester
     {
         Raylib.DrawRectangle(0, 0, GameCanvas.Width, GameCanvas.Height, new Color(0, 0, 0, 210));
         Raylib.DrawRectangleRec(ModalBoxRect, new Color(18, 24, 38, 255));
-        Raylib.DrawRectangleLinesEx(ModalBoxRect, 2, Color.Gold);
+        Raylib.DrawRectangleLinesEx(ModalBoxRect, 3, Color.Gold);
 
         bool closeHov = UiImageButton.IsHovered(ModalCloseBtnRect);
         Raylib.DrawRectangleRec(ModalCloseBtnRect, closeHov ? new Color(220, 38, 38, 200) : new Color(36, 44, 62, 255));
-        Raylib.DrawRectangleLinesEx(ModalCloseBtnRect, 1, closeHov ? Color.Red : Color.Gray);
-        UiFont.DrawCenteredInRect("X", ModalCloseBtnRect, 14, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalCloseBtnRect, 1.5f, closeHov ? Color.Red : Color.Gray);
+        UiFont.DrawCenteredInRect("X", ModalCloseBtnRect, 21, Color.White, isBold: true);
 
-        UiFont.DrawCenteredInRect("! OUT OF COINS !", new Rectangle(ModalBoxRect.X, ModalBoxRect.Y + 28, ModalBoxRect.Width, 34), 24, Color.Gold, isBold: true);
-        UiFont.DrawCenteredInRect("Not enough coins for this wager.", new Rectangle(ModalBoxRect.X + 20, ModalBoxRect.Y + 80, ModalBoxRect.Width - 40, 28), 18, Color.White);
-        UiFont.DrawCenteredInRect($"Your current balance: {_currency.Balance:N2} coins", new Rectangle(ModalBoxRect.X + 20, ModalBoxRect.Y + 115, ModalBoxRect.Width - 40, 26), 16, Color.LightGray);
-        UiFont.DrawCenteredInRect("Deposit more coins or select a smaller chip.", new Rectangle(ModalBoxRect.X + 20, ModalBoxRect.Y + 152, ModalBoxRect.Width - 40, 22), 14, new Color(160, 174, 192, 255));
+        UiFont.DrawCenteredInRect("! OUT OF COINS !", new Rectangle(ModalBoxRect.X, ModalBoxRect.Y + 42, ModalBoxRect.Width, 51), 36, Color.Gold, isBold: true);
+        UiFont.DrawCenteredInRect("Not enough coins for this wager.", new Rectangle(ModalBoxRect.X + 30, ModalBoxRect.Y + 120, ModalBoxRect.Width - 60, 42), 27, Color.White);
+        UiFont.DrawCenteredInRect($"Your current balance: {_currency.Balance:N2} coins", new Rectangle(ModalBoxRect.X + 30, ModalBoxRect.Y + 172, ModalBoxRect.Width - 60, 39), 24, Color.LightGray);
+        UiFont.DrawCenteredInRect("Deposit more coins or select a smaller chip.", new Rectangle(ModalBoxRect.X + 30, ModalBoxRect.Y + 228, ModalBoxRect.Width - 60, 33), 21, new Color(160, 174, 192, 255));
 
         bool depHov = UiImageButton.IsHovered(ModalDepositBtnRect);
         Raylib.DrawRectangleRec(ModalDepositBtnRect, depHov ? new Color(40, 200, 100, 255) : new Color(34, 160, 80, 255));
-        Raylib.DrawRectangleLinesEx(ModalDepositBtnRect, 2, depHov ? Color.Lime : Color.Gold);
-        UiFont.DrawCenteredInRect("DEPOSIT MORE", ModalDepositBtnRect, 16, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalDepositBtnRect, 3, depHov ? Color.Lime : Color.Gold);
+        UiFont.DrawCenteredInRect("DEPOSIT MORE", ModalDepositBtnRect, 24, Color.White, isBold: true);
 
         bool lobHov = UiImageButton.IsHovered(ModalLobbyBtnRect);
         Raylib.DrawRectangleRec(ModalLobbyBtnRect, lobHov ? new Color(71, 85, 105, 255) : new Color(51, 65, 85, 255));
-        Raylib.DrawRectangleLinesEx(ModalLobbyBtnRect, 1, lobHov ? Color.White : Color.Gray);
-        UiFont.DrawCenteredInRect("RETURN TO LOBBY", ModalLobbyBtnRect, 15, Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalLobbyBtnRect, 1.5f, lobHov ? Color.White : Color.Gray);
+        UiFont.DrawCenteredInRect("RETURN TO LOBBY", ModalLobbyBtnRect, 22.5f, Color.LightGray, isBold: true);
     }
 
     // ---------------- HELPER TYPES ----------------

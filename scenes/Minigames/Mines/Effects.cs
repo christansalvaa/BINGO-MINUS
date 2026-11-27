@@ -12,7 +12,7 @@ namespace BINGO_MINUS.Mines
     public static class Effects
     {
         public const float BombDuration = 2.0f;
-        private const float SmokeBaseWidth = 420f;
+        private const float SmokeBaseWidth = 630f;
 
         private sealed class Puff
         {
@@ -74,7 +74,7 @@ namespace BINGO_MINUS.Mines
             // shake: a few sine waves at different speeds, fading out over the 2 seconds
             float t = BombTimer;
             float env = MathF.Pow(MathF.Max(0f, 1f - t / BombDuration), 1.4f);
-            float amp = 18f * env;
+            float amp = 27f * env;
             ShakeOffset = new Vector2(
                 MathF.Sin(t * 63f) * amp + MathF.Sin(t * 29f + 1.7f) * amp * 0.5f,
                 MathF.Cos(t * 57f) * amp + MathF.Sin(t * 37f + 0.4f) * amp * 0.5f);

@@ -13,39 +13,39 @@ public sealed class PlinkoMinigame : IMinigame, IDepositRequester
     private const int MaxActiveBalls = 28;
     private const int MaxHistory = 13;
 
-    // Layout Regions (1280 x 720)
-    private static readonly Rectangle LeftPanelRect = new(24, 76, 308, 624);
-    private static readonly Rectangle BoardRect = new(348, 76, 664, 624);
-    private static readonly Rectangle RightPanelRect = new(1028, 76, 228, 624);
+    // Layout Regions (1920 x 1080)
+    private static readonly Rectangle LeftPanelRect = new(36, 114, 462, 936);
+    private static readonly Rectangle BoardRect = new(522, 114, 996, 936);
+    private static readonly Rectangle RightPanelRect = new(1542, 114, 342, 936);
 
     // Control Rectangles inside Left Panel
-    private static readonly Rectangle BetMinusRect = new(40, 122, 42, 40);
-    private static readonly Rectangle BetPillRect = new(88, 122, 180, 40);
-    private static readonly Rectangle BetPlusRect = new(274, 122, 42, 40);
+    private static readonly Rectangle BetMinusRect = new(60, 183, 63, 60);
+    private static readonly Rectangle BetPillRect = new(132, 183, 270, 60);
+    private static readonly Rectangle BetPlusRect = new(411, 183, 63, 60);
 
     private static readonly decimal[] BetPresets = [1m, 5m, 10m, 25m, 50m, 100m];
 
-    private static readonly Rectangle HalfBetRect = new(40, 212, 86, 30);
-    private static readonly Rectangle DoubleBetRect = new(135, 212, 86, 30);
-    private static readonly Rectangle MaxBetRect = new(230, 212, 86, 30);
+    private static readonly Rectangle HalfBetRect = new(60, 318, 129, 45);
+    private static readonly Rectangle DoubleBetRect = new(202.5f, 318, 129, 45);
+    private static readonly Rectangle MaxBetRect = new(345, 318, 129, 45);
 
-    private static readonly Rectangle RiskLowRect = new(40, 276, 88, 36);
-    private static readonly Rectangle RiskMedRect = new(134, 276, 88, 36);
-    private static readonly Rectangle RiskHighRect = new(228, 276, 88, 36);
+    private static readonly Rectangle RiskLowRect = new(60, 414, 132, 54);
+    private static readonly Rectangle RiskMedRect = new(201, 414, 132, 54);
+    private static readonly Rectangle RiskHighRect = new(342, 414, 132, 54);
 
-    private static readonly Rectangle Rows8Rect = new(40, 346, 88, 36);
-    private static readonly Rectangle Rows12Rect = new(134, 346, 88, 36);
-    private static readonly Rectangle Rows16Rect = new(228, 346, 88, 36);
+    private static readonly Rectangle Rows8Rect = new(60, 519, 132, 54);
+    private static readonly Rectangle Rows12Rect = new(201, 519, 132, 54);
+    private static readonly Rectangle Rows16Rect = new(342, 519, 132, 54);
 
-    private static readonly Rectangle DropBtnRect = new(40, 404, 276, 68);
-    private static readonly Rectangle AutoToggleRect = new(40, 492, 276, 44);
-    private static readonly Rectangle StatsBoxRect = new(40, 554, 276, 128);
+    private static readonly Rectangle DropBtnRect = new(60, 606, 414, 102);
+    private static readonly Rectangle AutoToggleRect = new(60, 738, 414, 66);
+    private static readonly Rectangle StatsBoxRect = new(60, 831, 414, 192);
 
     // Out of Coins Modal Rectangles
-    private static readonly Rectangle ModalBoxRect = new(390, 220, 500, 280);
-    private static readonly Rectangle ModalDepositBtnRect = new(420, 425, 205, 48);
-    private static readonly Rectangle ModalLobbyBtnRect = new(655, 425, 205, 48);
-    private static readonly Rectangle ModalCloseBtnRect = new(854, 232, 26, 26);
+    private static readonly Rectangle ModalBoxRect = new(585, 330, 750, 420);
+    private static readonly Rectangle ModalDepositBtnRect = new(630, 638, 308, 72);
+    private static readonly Rectangle ModalLobbyBtnRect = new(983, 638, 308, 72);
+    private static readonly Rectangle ModalCloseBtnRect = new(1281, 348, 39, 39);
 
     private readonly CurrencyManager _currency;
     private readonly Random _rand = new();
@@ -194,35 +194,35 @@ public sealed class PlinkoMinigame : IMinigame, IDepositRequester
 
     // ---------------- GEOMETRY HELPERS ----------------
     private float BoardCenterX => BoardRect.X + BoardRect.Width * 0.5f;
-    private float PyramidTopY => BoardRect.Y + 58f;
-    private float PyramidBottomY => BoardRect.Y + 510f;
-    private float BucketTopY => BoardRect.Y + 542f;
-    private const float BucketHeight = 42f;
+    private float PyramidTopY => BoardRect.Y + 87f;
+    private float PyramidBottomY => BoardRect.Y + 765f;
+    private float BucketTopY => BoardRect.Y + 813f;
+    private const float BucketHeight = 63f;
 
     private float GetSpacingX(int rows) => rows switch
     {
-        8 => 56f,
-        12 => 41f,
-        16 => 32.5f,
-        _ => 41f
+        8 => 84f,
+        12 => 61.5f,
+        16 => 48.75f,
+        _ => 61.5f
     };
 
     private float GetSpacingY(int rows) => (PyramidBottomY - PyramidTopY) / Math.Max(1, rows - 1);
 
     private float GetPegRadius(int rows) => rows switch
     {
-        8 => 5.5f,
-        12 => 4.5f,
-        16 => 3.7f,
-        _ => 4.5f
+        8 => 8.25f,
+        12 => 6.75f,
+        16 => 5.55f,
+        _ => 6.75f
     };
 
     private float GetBallRadius(int rows) => rows switch
     {
-        8 => 10.5f,
-        12 => 8.5f,
-        16 => 6.8f,
-        _ => 8.5f
+        8 => 15.75f,
+        12 => 12.75f,
+        16 => 10.2f,
+        _ => 12.75f
     };
 
     private Vector2 GetPegPosition(int rows, int row, int col)
@@ -238,8 +238,8 @@ public sealed class PlinkoMinigame : IMinigame, IDepositRequester
     {
         float dx = GetSpacingX(rows);
         float cx = BoardCenterX + (bucketIndex - rows * 0.5f) * dx;
-        float w = dx - 4f;
-        float bounceOffset = bucketIndex < _bucketBounce.Length ? MathF.Sin(_bucketBounce[bucketIndex] * MathF.PI) * 7f : 0f;
+        float w = dx - 6f;
+        float bounceOffset = bucketIndex < _bucketBounce.Length ? MathF.Sin(_bucketBounce[bucketIndex] * MathF.PI) * 10.5f : 0f;
         return new Rectangle(cx - w * 0.5f, BucketTopY + bounceOffset, w, BucketHeight);
     }
 
@@ -247,7 +247,7 @@ public sealed class PlinkoMinigame : IMinigame, IDepositRequester
     {
         int col = index % 3;
         int row = index / 3;
-        return new Rectangle(40 + col * 95, 170 + row * 34, 86, 28);
+        return new Rectangle(60 + col * 142.5f, 255 + row * 51, 129, 42);
     }
 
     // ---------------- UPDATE ----------------
@@ -661,13 +661,13 @@ public sealed class PlinkoMinigame : IMinigame, IDepositRequester
         Raylib.ClearBackground(new Color(14, 19, 34, 255));
 
         // Subtle grid mesh
-        for (int x = 0; x < GameCanvas.Width; x += 64)
-            Raylib.DrawLine(x, 62, x, GameCanvas.Height, new Color(255, 255, 255, 4));
-        for (int y = 62; y < GameCanvas.Height; y += 64)
+        for (int x = 0; x < GameCanvas.Width; x += 96)
+            Raylib.DrawLine(x, 93, x, GameCanvas.Height, new Color(255, 255, 255, 4));
+        for (int y = 93; y < GameCanvas.Height; y += 96)
             Raylib.DrawLine(0, y, GameCanvas.Width, y, new Color(255, 255, 255, 4));
 
-        float shakeX = _screenShake > 0f ? ((float)_rand.NextDouble() * 2f - 1f) * 6f * _screenShake : 0f;
-        float shakeY = _screenShake > 0f ? ((float)_rand.NextDouble() * 2f - 1f) * 6f * _screenShake : 0f;
+        float shakeX = _screenShake > 0f ? ((float)_rand.NextDouble() * 2f - 1f) * 9f * _screenShake : 0f;
+        float shakeY = _screenShake > 0f ? ((float)_rand.NextDouble() * 2f - 1f) * 9f * _screenShake : 0f;
 
         DrawLeftControls();
         DrawBoard(shakeX, shakeY);
@@ -691,83 +691,83 @@ public sealed class PlinkoMinigame : IMinigame, IDepositRequester
         Raylib.DrawRectangleLinesEx(LeftPanelRect, 2, new Color(255, 255, 255, 22));
 
         // Header Accent
-        UiFont.DrawText("BET AMOUNT", 40, 96, 12, new Color(156, 168, 192, 255), isBold: true);
+        UiFont.DrawText("BET AMOUNT", 60, 144, 18, new Color(156, 168, 192, 255), isBold: true);
 
         // Minus / Pill / Plus
-        DrawStyledButton(BetMinusRect, "-", 22, new Color(30, 40, 62, 255), Color.White);
+        DrawStyledButton(BetMinusRect, "-", 33, new Color(30, 40, 62, 255), Color.White);
         Raylib.DrawRectangleRec(BetPillRect, new Color(11, 15, 25, 255));
-        Raylib.DrawRectangleLinesEx(BetPillRect, 1, Color.Gold);
-        UiFont.DrawCenteredInRect($"{_bet:N2}", BetPillRect, 18, Color.Gold, isBold: true);
-        DrawStyledButton(BetPlusRect, "+", 22, new Color(30, 40, 62, 255), Color.White);
+        Raylib.DrawRectangleLinesEx(BetPillRect, 1.5f, Color.Gold);
+        UiFont.DrawCenteredInRect($"{_bet:N2}", BetPillRect, 27, Color.Gold, isBold: true);
+        DrawStyledButton(BetPlusRect, "+", 33, new Color(30, 40, 62, 255), Color.White);
 
         // Quick Bet Presets
         for (int i = 0; i < BetPresets.Length; i++)
         {
             Rectangle r = GetPresetRect(i);
             bool active = _bet == BetPresets[i];
-            DrawTogglePill(r, $"{BetPresets[i]:0}", active, Color.Gold, 13);
+            DrawTogglePill(r, $"{BetPresets[i]:0}", active, Color.Gold, 19.5f);
         }
 
         // Modifiers
-        DrawStyledButton(HalfBetRect, "1/2", 13, new Color(26, 34, 52, 255), Color.LightGray);
-        DrawStyledButton(DoubleBetRect, "2X", 13, new Color(26, 34, 52, 255), Color.LightGray);
-        DrawStyledButton(MaxBetRect, "MAX", 13, new Color(38, 32, 16, 255), Color.Gold, borderOverride: Color.Gold);
+        DrawStyledButton(HalfBetRect, "1/2", 19.5f, new Color(26, 34, 52, 255), Color.LightGray);
+        DrawStyledButton(DoubleBetRect, "2X", 19.5f, new Color(26, 34, 52, 255), Color.LightGray);
+        DrawStyledButton(MaxBetRect, "MAX", 19.5f, new Color(38, 32, 16, 255), Color.Gold, borderOverride: Color.Gold);
 
         // Risk Level
         bool locked = _balls.Count > 0;
-        UiFont.DrawText(locked ? "RISK LEVEL (LOCKED IN FLIGHT)" : "RISK LEVEL", 40, 254, 12,
+        UiFont.DrawText(locked ? "RISK LEVEL (LOCKED IN FLIGHT)" : "RISK LEVEL", 60, 381, 18,
             locked ? new Color(245, 158, 11, 220) : new Color(156, 168, 192, 255), isBold: true);
 
-        DrawTogglePill(RiskLowRect, "LOW", _risk == PlinkoRisk.Low, new Color(34, 197, 94, 255), 13, dimmed: locked && _risk != PlinkoRisk.Low);
-        DrawTogglePill(RiskMedRect, "MED", _risk == PlinkoRisk.Medium, new Color(245, 158, 11, 255), 13, dimmed: locked && _risk != PlinkoRisk.Medium);
-        DrawTogglePill(RiskHighRect, "HIGH", _risk == PlinkoRisk.High, new Color(239, 68, 68, 255), 13, dimmed: locked && _risk != PlinkoRisk.High);
+        DrawTogglePill(RiskLowRect, "LOW", _risk == PlinkoRisk.Low, new Color(34, 197, 94, 255), 19.5f, dimmed: locked && _risk != PlinkoRisk.Low);
+        DrawTogglePill(RiskMedRect, "MED", _risk == PlinkoRisk.Medium, new Color(245, 158, 11, 255), 19.5f, dimmed: locked && _risk != PlinkoRisk.Medium);
+        DrawTogglePill(RiskHighRect, "HIGH", _risk == PlinkoRisk.High, new Color(239, 68, 68, 255), 19.5f, dimmed: locked && _risk != PlinkoRisk.High);
 
         // Rows Selector
-        UiFont.DrawText("PEG ROWS", 40, 324, 12, new Color(156, 168, 192, 255), isBold: true);
-        DrawTogglePill(Rows8Rect, "8 ROWS", _rows == 8, Color.Gold, 12, dimmed: locked && _rows != 8);
-        DrawTogglePill(Rows12Rect, "12 ROWS", _rows == 12, Color.Gold, 12, dimmed: locked && _rows != 12);
-        DrawTogglePill(Rows16Rect, "16 ROWS", _rows == 16, Color.Gold, 12, dimmed: locked && _rows != 16);
+        UiFont.DrawText("PEG ROWS", 60, 486, 18, new Color(156, 168, 192, 255), isBold: true);
+        DrawTogglePill(Rows8Rect, "8 ROWS", _rows == 8, Color.Gold, 18, dimmed: locked && _rows != 8);
+        DrawTogglePill(Rows12Rect, "12 ROWS", _rows == 12, Color.Gold, 18, dimmed: locked && _rows != 12);
+        DrawTogglePill(Rows16Rect, "16 ROWS", _rows == 16, Color.Gold, 18, dimmed: locked && _rows != 16);
 
         // Big Drop Ball CTA Button
         bool dropHov = UiImageButton.IsHovered(DropBtnRect);
         Color dropBg = dropHov ? new Color(34, 197, 94, 255) : new Color(22, 163, 74, 255);
         Raylib.DrawRectangleRec(DropBtnRect, dropBg);
-        Raylib.DrawRectangleLinesEx(DropBtnRect, 2, dropHov ? Color.White : new Color(134, 239, 172, 255));
-        UiFont.DrawCenteredInRect("DROP BALL", new Rectangle(DropBtnRect.X, DropBtnRect.Y + 10, DropBtnRect.Width, 28), 24, Color.White, isBold: true);
-        UiFont.DrawCenteredInRect($"{_bet:N2} COINS  |  [SPACE]", new Rectangle(DropBtnRect.X, DropBtnRect.Y + 41, DropBtnRect.Width, 20), 12, new Color(220, 255, 230, 255), isBold: true);
+        Raylib.DrawRectangleLinesEx(DropBtnRect, 3, dropHov ? Color.White : new Color(134, 239, 172, 255));
+        UiFont.DrawCenteredInRect("DROP BALL", new Rectangle(DropBtnRect.X, DropBtnRect.Y + 15, DropBtnRect.Width, 42), 36, Color.White, isBold: true);
+        UiFont.DrawCenteredInRect($"{_bet:N2} COINS  |  [SPACE]", new Rectangle(DropBtnRect.X, DropBtnRect.Y + 61.5f, DropBtnRect.Width, 30), 18, new Color(220, 255, 230, 255), isBold: true);
 
         // Auto Drop Toggle
         bool autoHov = UiImageButton.IsHovered(AutoToggleRect);
         Color autoBg = _autoDrop ? new Color(20, 48, 36, 255) : new Color(24, 31, 48, 255);
         Color autoBorder = _autoDrop ? Color.Lime : (autoHov ? Color.Gold : new Color(255, 255, 255, 35));
         Raylib.DrawRectangleRec(AutoToggleRect, autoBg);
-        Raylib.DrawRectangleLinesEx(AutoToggleRect, _autoDrop ? 2 : 1, autoBorder);
-        UiFont.DrawText("AUTO DROP", AutoToggleRect.X + 16, AutoToggleRect.Y + 13, 14, _autoDrop ? Color.White : Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(AutoToggleRect, _autoDrop ? 3 : 1.5f, autoBorder);
+        UiFont.DrawText("AUTO DROP", AutoToggleRect.X + 24, AutoToggleRect.Y + 19.5f, 21, _autoDrop ? Color.White : Color.LightGray, isBold: true);
 
-        Rectangle badgeRect = new(AutoToggleRect.X + AutoToggleRect.Width - 66, AutoToggleRect.Y + 8, 54, 28);
+        Rectangle badgeRect = new(AutoToggleRect.X + AutoToggleRect.Width - 99, AutoToggleRect.Y + 12, 81, 42);
         Raylib.DrawRectangleRec(badgeRect, _autoDrop ? new Color(22, 163, 74, 255) : new Color(42, 50, 68, 255));
-        Raylib.DrawRectangleLinesEx(badgeRect, 1, _autoDrop ? Color.Lime : Color.Gray);
-        UiFont.DrawCenteredInRect(_autoDrop ? "ON" : "OFF", badgeRect, 13, _autoDrop ? Color.White : Color.Gray, isBold: true);
+        Raylib.DrawRectangleLinesEx(badgeRect, 1.5f, _autoDrop ? Color.Lime : Color.Gray);
+        UiFont.DrawCenteredInRect(_autoDrop ? "ON" : "OFF", badgeRect, 19.5f, _autoDrop ? Color.White : Color.Gray, isBold: true);
 
         // Session Stats Box
         Raylib.DrawRectangleRec(StatsBoxRect, new Color(13, 18, 30, 255));
-        Raylib.DrawRectangleLinesEx(StatsBoxRect, 1, new Color(255, 255, 255, 20));
-        UiFont.DrawText("SESSION STATS", StatsBoxRect.X + 14, StatsBoxRect.Y + 10, 11, Color.Gold, isBold: true);
+        Raylib.DrawRectangleLinesEx(StatsBoxRect, 1.5f, new Color(255, 255, 255, 20));
+        UiFont.DrawText("SESSION STATS", StatsBoxRect.X + 21, StatsBoxRect.Y + 15, 16.5f, Color.Gold, isBold: true);
 
         decimal netProfit = _totalReturned - _totalWagered;
         Color netColor = netProfit > 0m ? Color.Lime : netProfit < 0m ? new Color(248, 113, 113, 255) : Color.LightGray;
 
-        DrawStatRow(StatsBoxRect.X + 14, StatsBoxRect.Y + 34, StatsBoxRect.Width - 28, "Balls Dropped", $"{_totalDrops}", Color.White);
-        DrawStatRow(StatsBoxRect.X + 14, StatsBoxRect.Y + 56, StatsBoxRect.Width - 28, "In Flight", $"{_balls.Count}", new Color(147, 197, 253, 255));
-        DrawStatRow(StatsBoxRect.X + 14, StatsBoxRect.Y + 78, StatsBoxRect.Width - 28, "Best Payout", $"{_bestWin:N2}", Color.Gold);
-        DrawStatRow(StatsBoxRect.X + 14, StatsBoxRect.Y + 100, StatsBoxRect.Width - 28, "Net Profit", $"{(netProfit >= 0m ? "+" : "")}{netProfit:N2}", netColor);
+        DrawStatRow(StatsBoxRect.X + 21, StatsBoxRect.Y + 51, StatsBoxRect.Width - 42, "Balls Dropped", $"{_totalDrops}", Color.White);
+        DrawStatRow(StatsBoxRect.X + 21, StatsBoxRect.Y + 84, StatsBoxRect.Width - 42, "In Flight", $"{_balls.Count}", new Color(147, 197, 253, 255));
+        DrawStatRow(StatsBoxRect.X + 21, StatsBoxRect.Y + 117, StatsBoxRect.Width - 42, "Best Payout", $"{_bestWin:N2}", Color.Gold);
+        DrawStatRow(StatsBoxRect.X + 21, StatsBoxRect.Y + 150, StatsBoxRect.Width - 42, "Net Profit", $"{(netProfit >= 0m ? "+" : "")}{netProfit:N2}", netColor);
     }
 
     private static void DrawStatRow(float x, float y, float width, string label, string value, Color valColor)
     {
-        UiFont.DrawText(label, x, y, 13, new Color(160, 172, 195, 255));
-        float vw = UiFont.MeasureText(value, 13, isBold: true).X;
-        UiFont.DrawText(value, x + width - vw, y, 13, valColor, isBold: true);
+        UiFont.DrawText(label, x, y, 19.5f, new Color(160, 172, 195, 255));
+        float vw = UiFont.MeasureText(value, 19.5f, isBold: true).X;
+        UiFont.DrawText(value, x + width - vw, y, 19.5f, valColor, isBold: true);
     }
 
     private void DrawBoard(float shakeX, float shakeY)
@@ -896,9 +896,9 @@ public sealed class PlinkoMinigame : IMinigame, IDepositRequester
         }
 
         // Bottom Info Bar (Bucket Hover Probability & Profit Preview)
-        Rectangle infoBar = new(BoardRect.X + 18, BoardRect.Y + BoardRect.Height - 32, BoardRect.Width - 36, 24);
+        Rectangle infoBar = new(BoardRect.X + 27, BoardRect.Y + BoardRect.Height - 48, BoardRect.Width - 54, 36);
         Raylib.DrawRectangleRec(infoBar, new Color(11, 15, 26, 220));
-        Raylib.DrawRectangleLinesEx(infoBar, 1, new Color(255, 255, 255, 18));
+        Raylib.DrawRectangleLinesEx(infoBar, 1.5f, new Color(255, 255, 255, 18));
 
         if (hoveredBucket >= 0)
         {
@@ -907,54 +907,54 @@ public sealed class PlinkoMinigame : IMinigame, IDepositRequester
             decimal winAmt = decimal.Round(_bet * m, 2);
             string probText = probPct < 0.01 ? $"{probPct:0.0000}%" : $"{probPct:0.00}%";
             string info = $"SLOT #{hoveredBucket + 1}   |   PAYOUT: {PlinkoTables.FormatMultiplier(m)}   |   ODDS: {probText}   |   WIN: {winAmt:N2} COINS";
-            UiFont.DrawCenteredInRect(info, infoBar, 12, Color.Gold, isBold: true);
+            UiFont.DrawCenteredInRect(info, infoBar, 18, Color.Gold, isBold: true);
         }
         else
         {
             decimal maxM = mults[0];
             string tip = $"MAX MULTIPLIER: {PlinkoTables.FormatMultiplier(maxM)}   |   HOVER ANY BUCKET FOR ODDS   |   99.0% RTP";
-            UiFont.DrawCenteredInRect(tip, infoBar, 12, new Color(150, 165, 190, 255), isBold: false);
+            UiFont.DrawCenteredInRect(tip, infoBar, 18, new Color(150, 165, 190, 255), isBold: false);
         }
     }
 
     private void DrawRightHistory()
     {
         Raylib.DrawRectangleRec(RightPanelRect, new Color(19, 25, 40, 255));
-        Raylib.DrawRectangleLinesEx(RightPanelRect, 2, new Color(255, 255, 255, 22));
+        Raylib.DrawRectangleLinesEx(RightPanelRect, 3, new Color(255, 255, 255, 22));
 
-        UiFont.DrawText("RECENT DROPS", RightPanelRect.X + 16, RightPanelRect.Y + 16, 13, Color.Gold, isBold: true);
-        Raylib.DrawLine((int)RightPanelRect.X + 14, (int)RightPanelRect.Y + 38, (int)(RightPanelRect.X + RightPanelRect.Width - 14), (int)RightPanelRect.Y + 38, new Color(255, 255, 255, 20));
+        UiFont.DrawText("RECENT DROPS", RightPanelRect.X + 24, RightPanelRect.Y + 24, 19.5f, Color.Gold, isBold: true);
+        Raylib.DrawLine((int)RightPanelRect.X + 21, (int)RightPanelRect.Y + 57, (int)(RightPanelRect.X + RightPanelRect.Width - 21), (int)RightPanelRect.Y + 57, new Color(255, 255, 255, 20));
 
         if (_history.Count == 0)
         {
-            UiFont.DrawCenteredInRect("Drop a ball to start!", new Rectangle(RightPanelRect.X, RightPanelRect.Y + 120, RightPanelRect.Width, 30), 13, Color.Gray);
+            UiFont.DrawCenteredInRect("Drop a ball to start!", new Rectangle(RightPanelRect.X, RightPanelRect.Y + 180, RightPanelRect.Width, 45), 19.5f, Color.Gray);
             return;
         }
 
-        float y = RightPanelRect.Y + 48;
+        float y = RightPanelRect.Y + 72;
         for (int i = 0; i < _history.Count; i++)
         {
             var rec = _history[i];
-            Rectangle rowRect = new(RightPanelRect.X + 12, y, RightPanelRect.Width - 24, 38);
+            Rectangle rowRect = new(RightPanelRect.X + 18, y, RightPanelRect.Width - 36, 57);
             Raylib.DrawRectangleRec(rowRect, i == 0 ? new Color(28, 36, 58, 255) : new Color(14, 19, 32, 230));
-            Raylib.DrawRectangleLinesEx(rowRect, 1, i == 0 ? new Color(255, 215, 0, 100) : new Color(255, 255, 255, 14));
+            Raylib.DrawRectangleLinesEx(rowRect, 1.5f, i == 0 ? new Color(255, 215, 0, 100) : new Color(255, 255, 255, 14));
 
             // Multiplier Badge
-            Rectangle badge = new(rowRect.X + 6, rowRect.Y + 6, 62, 26);
+            Rectangle badge = new(rowRect.X + 9, rowRect.Y + 9, 93, 39);
             Raylib.DrawRectangleRounded(badge, 0.3f, 4, rec.BucketColor);
-            UiFont.DrawCenteredInRect(PlinkoTables.FormatMultiplier(rec.Multiplier), badge, 12, Color.White, isBold: true);
+            UiFont.DrawCenteredInRect(PlinkoTables.FormatMultiplier(rec.Multiplier), badge, 18, Color.White, isBold: true);
 
             // Payout & Net
             string payText = $"{rec.Payout:N2}";
             Color payColor = rec.Profit >= 0m ? Color.Lime : new Color(235, 120, 120, 255);
-            float pw = UiFont.MeasureText(payText, 13, isBold: true).X;
-            UiFont.DrawText(payText, rowRect.X + rowRect.Width - pw - 8, rowRect.Y + 5, 13, payColor, isBold: true);
+            float pw = UiFont.MeasureText(payText, 19.5f, isBold: true).X;
+            UiFont.DrawText(payText, rowRect.X + rowRect.Width - pw - 12, rowRect.Y + 7.5f, 19.5f, payColor, isBold: true);
 
             string diffText = $"{(rec.Profit >= 0m ? "+" : "")}{rec.Profit:N2}";
-            float dw = UiFont.MeasureText(diffText, 10).X;
-            UiFont.DrawText(diffText, rowRect.X + rowRect.Width - dw - 8, rowRect.Y + 21, 10, new Color(150, 162, 185, 255));
+            float dw = UiFont.MeasureText(diffText, 15).X;
+            UiFont.DrawText(diffText, rowRect.X + rowRect.Width - dw - 12, rowRect.Y + 31.5f, 15, new Color(150, 162, 185, 255));
 
-            y += 43;
+            y += 64.5f;
         }
     }
 
@@ -1013,27 +1013,27 @@ public sealed class PlinkoMinigame : IMinigame, IDepositRequester
     {
         Raylib.DrawRectangle(0, 0, GameCanvas.Width, GameCanvas.Height, new Color(0, 0, 0, 210));
         Raylib.DrawRectangleRec(ModalBoxRect, new Color(18, 24, 38, 255));
-        Raylib.DrawRectangleLinesEx(ModalBoxRect, 2, Color.Gold);
+        Raylib.DrawRectangleLinesEx(ModalBoxRect, 3, Color.Gold);
 
         bool closeHov = UiImageButton.IsHovered(ModalCloseBtnRect);
         Raylib.DrawRectangleRec(ModalCloseBtnRect, closeHov ? new Color(220, 38, 38, 200) : new Color(36, 44, 62, 255));
-        Raylib.DrawRectangleLinesEx(ModalCloseBtnRect, 1, closeHov ? Color.Red : Color.Gray);
-        UiFont.DrawCenteredInRect("X", ModalCloseBtnRect, 14, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalCloseBtnRect, 1.5f, closeHov ? Color.Red : Color.Gray);
+        UiFont.DrawCenteredInRect("X", ModalCloseBtnRect, 21, Color.White, isBold: true);
 
-        UiFont.DrawCenteredInRect("! OUT OF COINS !", new Rectangle(ModalBoxRect.X, ModalBoxRect.Y + 28, ModalBoxRect.Width, 34), 24, Color.Gold, isBold: true);
-        UiFont.DrawCenteredInRect($"You need {_bet:N2} coins to drop a ball.", new Rectangle(ModalBoxRect.X + 20, ModalBoxRect.Y + 80, ModalBoxRect.Width - 40, 28), 18, Color.White);
-        UiFont.DrawCenteredInRect($"Your current balance: {_currency.Balance:N2} coins", new Rectangle(ModalBoxRect.X + 20, ModalBoxRect.Y + 115, ModalBoxRect.Width - 40, 26), 16, Color.LightGray);
-        UiFont.DrawCenteredInRect("Deposit coins now or lower your bet amount.", new Rectangle(ModalBoxRect.X + 20, ModalBoxRect.Y + 152, ModalBoxRect.Width - 40, 22), 14, new Color(160, 174, 192, 255));
+        UiFont.DrawCenteredInRect("! OUT OF COINS !", new Rectangle(ModalBoxRect.X, ModalBoxRect.Y + 42, ModalBoxRect.Width, 51), 36, Color.Gold, isBold: true);
+        UiFont.DrawCenteredInRect($"You need {_bet:N2} coins to drop a ball.", new Rectangle(ModalBoxRect.X + 30, ModalBoxRect.Y + 120, ModalBoxRect.Width - 60, 42), 27, Color.White);
+        UiFont.DrawCenteredInRect($"Your current balance: {_currency.Balance:N2} coins", new Rectangle(ModalBoxRect.X + 30, ModalBoxRect.Y + 172, ModalBoxRect.Width - 60, 39), 24, Color.LightGray);
+        UiFont.DrawCenteredInRect("Deposit coins now or lower your bet amount.", new Rectangle(ModalBoxRect.X + 30, ModalBoxRect.Y + 228, ModalBoxRect.Width - 60, 33), 21, new Color(160, 174, 192, 255));
 
         bool depHov = UiImageButton.IsHovered(ModalDepositBtnRect);
         Raylib.DrawRectangleRec(ModalDepositBtnRect, depHov ? new Color(40, 200, 100, 255) : new Color(34, 160, 80, 255));
-        Raylib.DrawRectangleLinesEx(ModalDepositBtnRect, 2, depHov ? Color.Lime : Color.Gold);
-        UiFont.DrawCenteredInRect("DEPOSIT MORE", ModalDepositBtnRect, 16, Color.White, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalDepositBtnRect, 3, depHov ? Color.Lime : Color.Gold);
+        UiFont.DrawCenteredInRect("DEPOSIT MORE", ModalDepositBtnRect, 24, Color.White, isBold: true);
 
         bool lobHov = UiImageButton.IsHovered(ModalLobbyBtnRect);
         Raylib.DrawRectangleRec(ModalLobbyBtnRect, lobHov ? new Color(71, 85, 105, 255) : new Color(51, 65, 85, 255));
-        Raylib.DrawRectangleLinesEx(ModalLobbyBtnRect, 1, lobHov ? Color.White : Color.Gray);
-        UiFont.DrawCenteredInRect("RETURN TO LOBBY", ModalLobbyBtnRect, 15, Color.LightGray, isBold: true);
+        Raylib.DrawRectangleLinesEx(ModalLobbyBtnRect, 1.5f, lobHov ? Color.White : Color.Gray);
+        UiFont.DrawCenteredInRect("RETURN TO LOBBY", ModalLobbyBtnRect, 22.5f, Color.LightGray, isBold: true);
     }
 
     // ---------------- HELPER TYPES ----------------

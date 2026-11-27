@@ -6,7 +6,7 @@ namespace BINGO_MINUS.Mines
     /// <summary>Text + small drawing helpers (fonts are loaded at 4 sizes so text stays sharp).</summary>
     public static class UI
     {
-        private static readonly int[] Sizes = { 16, 24, 40, 64 };
+        private static readonly int[] Sizes = { 24, 36, 60, 96 };
         private static readonly Font[] Fonts = new Font[Sizes.Length];
         private static bool _loaded;
 

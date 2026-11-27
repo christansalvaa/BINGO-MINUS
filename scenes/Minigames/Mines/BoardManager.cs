@@ -10,9 +10,9 @@ namespace BINGO_MINUS.Mines
         public const int Rows = 5;
         public const int CardCount = Columns * Rows;
 
-        private const float CardWidth = 78f;
-        private const float CardHeight = 116f;
-        private const float Gap = 9f;
+        private const float CardWidth = 117f;
+        private const float CardHeight = 174f;
+        private const float Gap = 13.5f;
         private const float FlipSeconds = 0.30f;
 
         public static readonly List<Card> Cards = new();

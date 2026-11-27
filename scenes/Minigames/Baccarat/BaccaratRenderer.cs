@@ -7,8 +7,8 @@ namespace BINGO_MINUS;
 
 internal static class BaccaratRenderer
 {
-    public const float CardWidth = 92f;
-    public const float CardHeight = 130f;
+    public const float CardWidth = 138f;
+    public const float CardHeight = 195f;
 
     public static void DrawTableBackground()
     {
@@ -16,32 +16,32 @@ internal static class BaccaratRenderer
         Raylib.ClearBackground(new Color(14, 18, 28, 255));
 
         // Luxury emerald-teal velvet table felt ellipse & inner frame
-        Rectangle outerRail = new(18, 68, GameCanvas.Width - 36, 484);
+        Rectangle outerRail = new(27, 102, GameCanvas.Width - 54, 726);
         Raylib.DrawRectangleRounded(outerRail, 0.06f, 10, new Color(46, 22, 18, 255));
-        Raylib.DrawRectangleRoundedLinesEx(outerRail, 0.06f, 10, 2.5f, new Color(186, 145, 58, 175));
+        Raylib.DrawRectangleRoundedLinesEx(outerRail, 0.06f, 10, 3.75f, new Color(186, 145, 58, 175));
 
-        Rectangle feltRect = new(28, 76, GameCanvas.Width - 56, 468);
+        Rectangle feltRect = new(42, 114, GameCanvas.Width - 84, 702);
         Raylib.DrawRectangleRounded(feltRect, 0.055f, 10, new Color(13, 62, 48, 255));
 
         // Subtle spotlight sheen in center of felt
-        Raylib.DrawEllipse(GameCanvas.Width / 2, 290, 440, 175, new Color(22, 92, 70, 95));
-        Raylib.DrawEllipse(GameCanvas.Width / 2, 290, 290, 115, new Color(30, 112, 85, 65));
+        Raylib.DrawEllipse(GameCanvas.Width / 2, 435, 660, 262, new Color(22, 92, 70, 95));
+        Raylib.DrawEllipse(GameCanvas.Width / 2, 435, 435, 172, new Color(30, 112, 85, 65));
 
         // Inner gold decorative felt border
-        Rectangle innerLine = new(38, 86, GameCanvas.Width - 76, 448);
-        Raylib.DrawRectangleRoundedLinesEx(innerLine, 0.05f, 10, 1.5f, new Color(235, 195, 75, 95));
+        Rectangle innerLine = new(57, 129, GameCanvas.Width - 114, 672);
+        Raylib.DrawRectangleRoundedLinesEx(innerLine, 0.05f, 10, 2.25f, new Color(235, 195, 75, 95));
 
         // Subtle curved table center divider line
-        Raylib.DrawLine(640, 155, 640, 355, new Color(235, 195, 75, 45));
+        Raylib.DrawLine(960, 233, 960, 533, new Color(235, 195, 75, 45));
 
         // Subtle embossed casino felt watermark
-        UiFont.DrawCenteredText("PUNTO BANCO  •  8-DECK SHOE  •  TIE PAYS 8:1  •  PAIRS PAY 11:1", 352, 11, new Color(240, 215, 130, 85), isBold: true);
+        UiFont.DrawCenteredText("PUNTO BANCO  •  8-DECK SHOE  •  TIE PAYS 8:1  •  PAIRS PAY 11:1", 528, 16.5f, new Color(240, 215, 130, 85), isBold: true);
     }
 
     public static void DrawRoadmapPanel(Rectangle rect, IReadOnlyList<BaccaratRoundRecord> history)
     {
         Raylib.DrawRectangleRounded(rect, 0.14f, 6, new Color(11, 16, 28, 235));
-        Raylib.DrawRectangleRoundedLinesEx(rect, 0.14f, 6, 1.5f, new Color(235, 195, 75, 130));
+        Raylib.DrawRectangleRoundedLinesEx(rect, 0.14f, 6, 2.25f, new Color(235, 195, 75, 130));
 
         // Left stats summary column inside roadmap
         int pWins = 0, bWins = 0, ties = 0;
@@ -55,19 +55,19 @@ internal static class BaccaratRenderer
             }
         }
 
-        float sx = rect.X + 12;
-        UiFont.DrawText("BEAD ROAD", sx, rect.Y + 7, 10, Color.Gold, isBold: true);
-        DrawMiniCounter(sx, rect.Y + 22, "P", pWins, new Color(37, 99, 235, 255));
-        DrawMiniCounter(sx + 48, rect.Y + 22, "B", bWins, new Color(220, 38, 38, 255));
-        DrawMiniCounter(sx, rect.Y + 46, "T", ties, new Color(22, 163, 74, 255));
-        UiFont.DrawText($"#{history.Count}", sx + 48, rect.Y + 48, 12, new Color(160, 175, 195, 255), isBold: true);
+        float sx = rect.X + 18;
+        UiFont.DrawText("BEAD ROAD", sx, rect.Y + 10.5f, 15, Color.Gold, isBold: true);
+        DrawMiniCounter(sx, rect.Y + 33, "P", pWins, new Color(37, 99, 235, 255));
+        DrawMiniCounter(sx + 72, rect.Y + 33, "B", bWins, new Color(220, 38, 38, 255));
+        DrawMiniCounter(sx, rect.Y + 69, "T", ties, new Color(22, 163, 74, 255));
+        UiFont.DrawText($"#{history.Count}", sx + 72, rect.Y + 72, 18, new Color(160, 175, 195, 255), isBold: true);
 
         // Bead Plate Grid: 4 rows x 22 columns (fills top-to-bottom per column)
         const int rows = 4;
         const int cols = 22;
-        float cellSize = 15.5f;
-        float gridX = rect.X + 108;
-        float gridY = rect.Y + 6;
+        float cellSize = 23.25f;
+        float gridX = rect.X + 162;
+        float gridY = rect.Y + 9;
 
         // Grid background
         Raylib.DrawRectangle((int)gridX, (int)gridY, (int)(cols * cellSize), (int)(rows * cellSize), new Color(18, 24, 38, 255));
@@ -109,31 +109,31 @@ internal static class BaccaratRenderer
                 _ => "T"
             };
 
-            Raylib.DrawCircleV(new Vector2(cx, cy), 6.2f, beadCol);
+            Raylib.DrawCircleV(new Vector2(cx, cy), 9.3f, beadCol);
             if (rec.IsNatural)
             {
-                Raylib.DrawCircleLines((int)cx, (int)cy, 6.5f, Color.Gold);
+                Raylib.DrawCircleLines((int)cx, (int)cy, 9.75f, Color.Gold);
             }
 
             // Tiny pair dots (authentic Macau Bead Plate: top-left red = Banker Pair, bottom-right blue = Player Pair)
             if (rec.BankerPair)
             {
-                Raylib.DrawCircleV(new Vector2(cx - 4.8f, cy - 4.8f), 2.3f, new Color(255, 90, 90, 255));
+                Raylib.DrawCircleV(new Vector2(cx - 7.2f, cy - 7.2f), 3.45f, new Color(255, 90, 90, 255));
             }
             if (rec.PlayerPair)
             {
-                Raylib.DrawCircleV(new Vector2(cx + 4.8f, cy + 4.8f), 2.3f, new Color(96, 165, 250, 255));
+                Raylib.DrawCircleV(new Vector2(cx + 7.2f, cy + 7.2f), 3.45f, new Color(96, 165, 250, 255));
             }
 
-            UiFont.DrawCenteredInRect(letter, new Rectangle(cx - 6, cy - 6, 12, 12), 9, Color.White, isBold: true);
+            UiFont.DrawCenteredInRect(letter, new Rectangle(cx - 9, cy - 9, 18, 18), 13.5f, Color.White, isBold: true);
         }
     }
 
     private static void DrawMiniCounter(float x, float y, string label, int count, Color color)
     {
-        Raylib.DrawCircleV(new Vector2(x + 8, y + 9), 8, color);
-        UiFont.DrawCenteredInRect(label, new Rectangle(x, y + 1, 16, 16), 10, Color.White, isBold: true);
-        UiFont.DrawText(count.ToString(), x + 20, y + 2, 13, Color.White, isBold: true);
+        Raylib.DrawCircleV(new Vector2(x + 12, y + 13.5f), 12, color);
+        UiFont.DrawCenteredInRect(label, new Rectangle(x, y + 1.5f, 24, 24), 15, Color.White, isBold: true);
+        UiFont.DrawText(count.ToString(), x + 30, y + 3, 19.5f, Color.White, isBold: true);
     }
 
     public static void DrawAnimatedCard(
@@ -176,36 +176,36 @@ internal static class BaccaratRenderer
         string rankStr = GetRankSymbol(card.Rank);
 
         // Subtle inner pinstripe frame
-        Rectangle inner = new(rect.X + 5, rect.Y + 5, Math.Max(2, rect.Width - 10), Math.Max(2, rect.Height - 10));
-        Raylib.DrawRectangleRoundedLinesEx(inner, 0.08f, 6, 1f, new Color(210, 195, 160, 110));
+        Rectangle inner = new(rect.X + 7.5f, rect.Y + 7.5f, Math.Max(3, rect.Width - 15), Math.Max(3, rect.Height - 15));
+        Raylib.DrawRectangleRoundedLinesEx(inner, 0.08f, 6, 1.5f, new Color(210, 195, 160, 110));
 
         // Corner index (top-left)
-        float rankSize = rotatedSideways ? 20f : 22f;
-        UiFont.DrawText(rankStr, rect.X + 8, rect.Y + 6, rankSize, ink, isBold: true);
-        DrawSuitShape(card.Suit, new Vector2(rect.X + 17, rect.Y + 35), 6.5f, ink);
+        float rankSize = rotatedSideways ? 30f : 33f;
+        UiFont.DrawText(rankStr, rect.X + 12, rect.Y + 9, rankSize, ink, isBold: true);
+        DrawSuitShape(card.Suit, new Vector2(rect.X + 25.5f, rect.Y + 52.5f), 9.75f, ink);
 
         // Center large suit emblem
         Vector2 mid = new(rect.X + rect.Width * 0.5f, rect.Y + rect.Height * 0.5f);
-        DrawSuitShape(card.Suit, mid, rotatedSideways ? 16f : 21f, ink);
+        DrawSuitShape(card.Suit, mid, rotatedSideways ? 24f : 31.5f, ink);
 
         // Bottom-right corner rank
         Vector2 rSize = UiFont.MeasureText(rankStr, rankSize, isBold: true);
-        UiFont.DrawText(rankStr, rect.X + rect.Width - rSize.X - 8, rect.Y + rect.Height - rSize.Y - 6, rankSize, ink, isBold: true);
-        DrawSuitShape(card.Suit, new Vector2(rect.X + rect.Width - 17, rect.Y + rect.Height - 34), 6.5f, ink);
+        UiFont.DrawText(rankStr, rect.X + rect.Width - rSize.X - 12, rect.Y + rect.Height - rSize.Y - 9, rankSize, ink, isBold: true);
+        DrawSuitShape(card.Suit, new Vector2(rect.X + rect.Width - 25.5f, rect.Y + rect.Height - 51), 9.75f, ink);
     }
 
     private static void DrawCardBack(Rectangle rect)
     {
         // Royal crimson & gold casino back
         Raylib.DrawRectangleRounded(rect, 0.12f, 8, new Color(248, 246, 240, 255));
-        Rectangle inner = new(rect.X + 5, rect.Y + 5, Math.Max(2, rect.Width - 10), Math.Max(2, rect.Height - 10));
+        Rectangle inner = new(rect.X + 7.5f, rect.Y + 7.5f, Math.Max(3, rect.Width - 15), Math.Max(3, rect.Height - 15));
         Raylib.DrawRectangleRounded(inner, 0.08f, 6, new Color(138, 18, 38, 255));
-        Raylib.DrawRectangleRoundedLinesEx(inner, 0.08f, 6, 1.5f, new Color(238, 198, 80, 220));
+        Raylib.DrawRectangleRoundedLinesEx(inner, 0.08f, 6, 2.25f, new Color(238, 198, 80, 220));
 
-        if (inner.Width > 26 && inner.Height > 26)
+        if (inner.Width > 39 && inner.Height > 39)
         {
-            Rectangle inner2 = new(inner.X + 5, inner.Y + 5, inner.Width - 10, inner.Height - 10);
-            Raylib.DrawRectangleRoundedLinesEx(inner2, 0.06f, 6, 1f, new Color(238, 198, 80, 120));
+            Rectangle inner2 = new(inner.X + 7.5f, inner.Y + 7.5f, inner.Width - 15, inner.Height - 15);
+            Raylib.DrawRectangleRoundedLinesEx(inner2, 0.06f, 6, 1.5f, new Color(238, 198, 80, 120));
 
             Vector2 c = new(rect.X + rect.Width * 0.5f, rect.Y + rect.Height * 0.5f);
             Raylib.DrawPoly(c, 4, Math.Min(inner2.Width, inner2.Height) * 0.28f, 0f, new Color(238, 198, 80, 185));
@@ -331,7 +331,7 @@ internal static class BaccaratRenderer
 
         string txt = value >= 1000 ? $"{value / 1000}K" : value.ToString();
         Color textCol = (value == 1 || value == 1000) ? new Color((byte)18, (byte)22, (byte)32, alpha) : new Color((byte)255, (byte)255, (byte)255, alpha);
-        float fontSize = txt.Length >= 3 ? 13f : 15f;
+        float fontSize = txt.Length >= 3 ? 19.5f : 22.5f;
         UiFont.DrawCenteredInRect(txt, new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2), fontSize, textCol, isBold: true);
     }
 
@@ -344,16 +344,16 @@ internal static class BaccaratRenderer
 
         for (int i = 0; i < stackCount; i++)
         {
-            Vector2 pos = new(center.X, center.Y - i * 4.5f);
-            DrawCasinoChip(pos, 18f, topVal, selected: false, affordable: true);
+            Vector2 pos = new(center.X, center.Y - i * 6.75f);
+            DrawCasinoChip(pos, 27f, topVal, selected: false, affordable: true);
         }
 
         // Crisp pill below chip stack showing exact bet
         string label = $"{amount:0.##}";
-        float w = Math.Max(52f, UiFont.MeasureText(label, 13, isBold: true).X + 16f);
-        Rectangle pill = new(center.X - w * 0.5f, center.Y + 18f, w, 22f);
+        float w = Math.Max(78f, UiFont.MeasureText(label, 19.5f, isBold: true).X + 24f);
+        Rectangle pill = new(center.X - w * 0.5f, center.Y + 27f, w, 33f);
         Raylib.DrawRectangleRounded(pill, 0.5f, 6, new Color(12, 16, 26, 235));
-        Raylib.DrawRectangleRoundedLinesEx(pill, 0.5f, 6, 1.2f, Color.Gold);
-        UiFont.DrawCenteredInRect(label, pill, 13, Color.Gold, isBold: true);
+        Raylib.DrawRectangleRoundedLinesEx(pill, 0.5f, 6, 1.8f, Color.Gold);
+        UiFont.DrawCenteredInRect(label, pill, 19.5f, Color.Gold, isBold: true);
     }
 }

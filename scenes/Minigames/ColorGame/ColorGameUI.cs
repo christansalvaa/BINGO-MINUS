@@ -12,20 +12,20 @@ namespace BINGO_MINUS;
 internal static class ColorGameUI
 {
     // --- Layout ---------------------------------------------------------------------------
-    private const float DiceSize = 150f;
-    private const float ChipCenterY = 530f;
-    private const float ChipRadius = 28f;
+    private const float DiceSize = 225f;
+    private const float ChipCenterY = 795f;
+    private const float ChipRadius = 42f;
 
-    public static readonly Rectangle BtnUndo = new(65, 580, 130, 56);
-    public static readonly Rectangle BtnClear = new(205, 580, 130, 56);
-    public static readonly Rectangle BtnRebet = new(345, 580, 130, 56);
-    public static readonly Rectangle BtnRoll = new(495, 580, 720, 56);
+    public static readonly Rectangle BtnUndo = new(98, 870, 195, 84);
+    public static readonly Rectangle BtnClear = new(308, 870, 195, 84);
+    public static readonly Rectangle BtnRebet = new(518, 870, 195, 84);
+    public static readonly Rectangle BtnRoll = new(743, 870, 1080, 84);
 
-    public static Rectangle DieRect(int index) => new(365f + index * 200f, 95f, DiceSize, DiceSize);
+    public static Rectangle DieRect(int index) => new(548f + index * 300f, 143f, DiceSize, DiceSize);
 
-    public static Rectangle TileBounds(int colorIndex) => new(65f + colorIndex * 194f, 322f, 180f, 148f);
+    public static Rectangle TileBounds(int colorIndex) => new(98f + colorIndex * 291f, 483f, 270f, 222f);
 
-    public static Vector2 ChipCenter(int index) => new(95f + index * 68f, ChipCenterY);
+    public static Vector2 ChipCenter(int index) => new(143f + index * 102f, ChipCenterY);
 
     public static Rectangle ChipBounds(int index)
     {
@@ -91,12 +91,12 @@ internal static class ColorGameUI
         Raylib.DrawRectangleGradientV(0, 0, GameCanvas.Width, GameCanvas.Height, new Color(40, 14, 52, 255), new Color(14, 8, 28, 255));
 
         // Carnival-style bunting along the top
-        for (int x = 0; x < GameCanvas.Width; x += 64)
+        for (int x = 0; x < GameCanvas.Width; x += 96)
         {
-            DiceColor c = ColorGameRules.All[(x / 64) % ColorGameRules.All.Length];
+            DiceColor c = ColorGameRules.All[(x / 96) % ColorGameRules.All.Length];
             Color col = ColorOf(c);
             col.A = 110;
-            Raylib.DrawTriangle(new Vector2(x, 62), new Vector2(x + 32, 84), new Vector2(x + 64, 62), col);
+            Raylib.DrawTriangle(new Vector2(x, 93), new Vector2(x + 48, 126), new Vector2(x + 96, 93), col);
         }
     }
 
@@ -106,11 +106,11 @@ internal static class ColorGameUI
     {
         Rectangle home = DieRect(index);
         Rectangle r = home;
-        r.X += MathF.Sin(time * 31f + index * 2.3f) * 6f * shake;
-        r.Y += MathF.Abs(MathF.Sin(time * 17f + index * 1.7f)) * -16f * shake;
+        r.X += MathF.Sin(time * 31f + index * 2.3f) * 9f * shake;
+        r.Y += MathF.Abs(MathF.Sin(time * 17f + index * 1.7f)) * -24f * shake;
 
         // Shadow stays on the table while the die hops
-        Raylib.DrawRectangleRounded(new Rectangle(home.X + 6, home.Y + 12, DiceSize, DiceSize), 0.18f, 8, new Color(0, 0, 0, 90));
+        Raylib.DrawRectangleRounded(new Rectangle(home.X + 9, home.Y + 18, DiceSize, DiceSize), 0.18f, 8, new Color(0, 0, 0, 90));
 
         Texture2D art = DieTextures[(int)face];
         if (CasinoArt.Has(art))
@@ -120,14 +120,14 @@ internal static class ColorGameUI
             return;
         }
 
-        Raylib.DrawRectangleRounded(new Rectangle(r.X - 4, r.Y - 4, r.Width + 8, r.Height + 8), 0.18f, 8, new Color(255, 255, 255, 230));
+        Raylib.DrawRectangleRounded(new Rectangle(r.X - 6, r.Y - 6, r.Width + 12, r.Height + 12), 0.18f, 8, new Color(255, 255, 255, 230));
         Raylib.DrawRectangleRounded(r, 0.18f, 8, ColorOf(face));
 
         // Glossy highlight + inner bevel
-        Raylib.DrawRectangleRounded(new Rectangle(r.X + 12, r.Y + 10, r.Width - 24, 26), 0.5f, 8, new Color(255, 255, 255, 60));
-        Raylib.DrawRectangleLinesEx(new Rectangle(r.X + 14, r.Y + 14, r.Width - 28, r.Height - 28), 3, new Color(0, 0, 0, 45));
+        Raylib.DrawRectangleRounded(new Rectangle(r.X + 18, r.Y + 15, r.Width - 36, 39), 0.5f, 8, new Color(255, 255, 255, 60));
+        Raylib.DrawRectangleLinesEx(new Rectangle(r.X + 21, r.Y + 21, r.Width - 42, r.Height - 42), 4.5f, new Color(0, 0, 0, 45));
 
-        UiFont.DrawCenteredInRect(ColorGameRules.NameOf(face), r, 26, TextOn(face), isBold: true);
+        UiFont.DrawCenteredInRect(ColorGameRules.NameOf(face), r, 39, TextOn(face), isBold: true);
     }
 
     // --- Betting board --------------------------------------------------------------------
@@ -169,36 +169,36 @@ internal static class ColorGameUI
             }
 
             Color outline = hasResult && matched > 0 ? Color.Gold : new Color(255, 255, 255, hovered ? 230 : 90);
-            Raylib.DrawRectangleLinesEx(tile, hasResult && matched > 0 ? 4 : 2, outline);
+            Raylib.DrawRectangleLinesEx(tile, hasResult && matched > 0 ? 6 : 3, outline);
 
             if (!textured)
             {
                 Color text = TextOn(color);
-                UiFont.DrawCenteredInRect(ColorGameRules.NameOf(color), new Rectangle(tile.X, tile.Y + 8, tile.Width, 30), 22, text, isBold: true);
-                UiFont.DrawCenteredInRect("1 TO 1 PER DIE", new Rectangle(tile.X, tile.Y + 36, tile.Width, 18), 11, text, isBold: false);
+                UiFont.DrawCenteredInRect(ColorGameRules.NameOf(color), new Rectangle(tile.X, tile.Y + 12, tile.Width, 45), 33, text, isBold: true);
+                UiFont.DrawCenteredInRect("1 TO 1 PER DIE", new Rectangle(tile.X, tile.Y + 54, tile.Width, 27), 16.5f, text, isBold: false);
             }
 
             if (stake > 0m)
             {
-                CasinoChips.DrawChip(new Vector2(tile.X + tile.Width / 2f, tile.Y + 96f), 26f, stake, CasinoChips.Format(stake));
+                CasinoChips.DrawChip(new Vector2(tile.X + tile.Width / 2f, tile.Y + 144f), 39f, stake, CasinoChips.Format(stake));
             }
 
             if (hasResult && matched > 0)
             {
                 // Match badge in the corner (x1 / x2 / x3)
-                Rectangle badge = new(tile.X + tile.Width - 48, tile.Y + 6, 42, 24);
+                Rectangle badge = new(tile.X + tile.Width - 72, tile.Y + 9, 63, 36);
                 if (CasinoArt.Has(_texMatchBadge)) CasinoArt.Draw(_texMatchBadge, badge);
                 else Raylib.DrawRectangleRounded(badge, 0.4f, 6, Color.Gold);
-                UiFont.DrawCenteredInRect($"x{matched}", badge, 16, Color.Black, isBold: true);
+                UiFont.DrawCenteredInRect($"x{matched}", badge, 24, Color.Black, isBold: true);
 
                 if (stake > 0m)
                 {
-                    UiFont.DrawCenteredInRect($"+{stake * matched:N0}", new Rectangle(tile.X, tile.Y + tile.Height - 22, tile.Width, 20), 15, Color.Black, isBold: true);
+                    UiFont.DrawCenteredInRect($"+{stake * matched:N0}", new Rectangle(tile.X, tile.Y + tile.Height - 33, tile.Width, 30), 22.5f, Color.Black, isBold: true);
                 }
             }
             else if (lostBet)
             {
-                UiFont.DrawCenteredInRect($"-{stake:N0}", new Rectangle(tile.X, tile.Y + tile.Height - 22, tile.Width, 20), 15, new Color(255, 160, 160, 255), isBold: true);
+                UiFont.DrawCenteredInRect($"-{stake:N0}", new Rectangle(tile.X, tile.Y + tile.Height - 33, tile.Width, 30), 22.5f, new Color(255, 160, 160, 255), isBold: true);
             }
         }
     }
@@ -206,13 +206,13 @@ internal static class ColorGameUI
     // --- Chip rack ------------------------------------------------------------------------
     public static void DrawChipRack(int selectedIndex, bool enabled)
     {
-        UiFont.DrawText("SELECT CHIP", 65, 474, 13, Color.LightGray, isBold: true);
+        UiFont.DrawText("SELECT CHIP", 98, 711, 19.5f, Color.LightGray, isBold: true);
 
         for (int i = 0; i < CasinoChips.Values.Length; i++)
         {
             Vector2 center = ChipCenter(i);
             bool selected = i == selectedIndex;
-            if (selected) center.Y -= 5f;
+            if (selected) center.Y -= 7.5f;
 
             CasinoChips.DrawChip(center, ChipRadius, CasinoChips.Values[i], selected: selected && enabled);
         }
@@ -233,47 +233,47 @@ internal static class ColorGameUI
     // --- Info panels ----------------------------------------------------------------------
     public static void DrawInfoPanels(decimal totalBet, decimal lastWin, IReadOnlyList<DiceColor[]> history)
     {
-        DrawValuePanel(new Rectangle(500, 488, 240, 70), "TOTAL BET", $"{totalBet:N2}", Color.Gold);
-        DrawValuePanel(new Rectangle(760, 488, 240, 70), "LAST WIN", $"{lastWin:N2}", lastWin > 0m ? Color.Lime : Color.Gray);
+        DrawValuePanel(new Rectangle(750, 732, 360, 105), "TOTAL BET", $"{totalBet:N2}", Color.Gold);
+        DrawValuePanel(new Rectangle(1140, 732, 360, 105), "LAST WIN", $"{lastWin:N2}", lastWin > 0m ? Color.Lime : Color.Gray);
 
         // Last rolls (newest on top)
-        Rectangle panel = new(1020, 488, 195, 70);
+        Rectangle panel = new(1530, 732, 293, 105);
         CasinoArt.DrawPanel(_texPanelRolls, panel, PanelBg, new Color(255, 255, 255, 25));
-        UiFont.DrawText("LAST ROLLS", panel.X + 12, panel.Y + 5, 11, Color.LightGray, isBold: true);
+        UiFont.DrawText("LAST ROLLS", panel.X + 18, panel.Y + 8, 16.5f, Color.LightGray, isBold: true);
 
         for (int row = 0; row < Math.Min(history.Count, 3); row++)
         {
             for (int d = 0; d < ColorGameRules.DiceCount; d++)
             {
-                Rectangle sq = new(panel.X + 14 + d * 20, panel.Y + 22 + row * 15, 16, 12);
+                Rectangle sq = new(panel.X + 21 + d * 30, panel.Y + 33 + row * 22.5f, 24, 18);
                 Raylib.DrawRectangleRec(sq, ColorOf(history[row][d]));
-                Raylib.DrawRectangleLinesEx(sq, 1, new Color(255, 255, 255, 120));
+                Raylib.DrawRectangleLinesEx(sq, 1.5f, new Color(255, 255, 255, 120));
             }
         }
 
         if (history.Count == 0)
         {
-            UiFont.DrawText("No rolls yet", panel.X + 12, panel.Y + 34, 12, new Color(150, 160, 180, 255));
+            UiFont.DrawText("No rolls yet", panel.X + 18, panel.Y + 51, 18, new Color(150, 160, 180, 255));
         }
     }
 
     private static void DrawValuePanel(Rectangle rect, string label, string value, Color valueColor)
     {
         CasinoArt.DrawPanel(_texPanelValue, rect, PanelBg, new Color(255, 180, 0, 90));
-        UiFont.DrawText(label, rect.X + 14, rect.Y + 8, 11, Color.LightGray, isBold: true);
-        UiFont.DrawText(value, rect.X + 14, rect.Y + 28, 26, valueColor, isBold: true);
+        UiFont.DrawText(label, rect.X + 21, rect.Y + 12, 16.5f, Color.LightGray, isBold: true);
+        UiFont.DrawText(value, rect.X + 21, rect.Y + 42, 39, valueColor, isBold: true);
     }
 
     public static void DrawStatusLine(string text, Color color)
     {
-        UiFont.DrawCenteredInRect(text, new Rectangle(0, 262, GameCanvas.Width, 40), 24, color, isBold: true);
+        UiFont.DrawCenteredInRect(text, new Rectangle(0, 393, GameCanvas.Width, 60), 36, color, isBold: true);
     }
 
     public static void DrawFooterHint()
     {
         UiFont.DrawText(
             "Left click a colour: place chip   |   Right click: remove bet   |   Each die that matches your colour pays 1 to 1 (stake back + win)",
-            65, 655, 13, new Color(170, 180, 200, 255));
-        UiFont.DrawText("Example: 10 on RED and two dice land RED = 10 stake back + 20 win = 30 returned. Triple RED returns 40.", 65, 677, 12, new Color(130, 140, 160, 255));
+            98, 983, 19.5f, new Color(170, 180, 200, 255));
+        UiFont.DrawText("Example: 10 on RED and two dice land RED = 10 stake back + 20 win = 30 returned. Triple RED returns 40.", 98, 1016, 18, new Color(130, 140, 160, 255));
     }
 }
