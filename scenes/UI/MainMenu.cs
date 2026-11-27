@@ -12,7 +12,8 @@ internal enum MainMenuAction
     PlaySlots,
     OpenPaywall,
     PlayBlackjack,
-    PlayCrossroads
+    PlayCrossroads,
+    PlayMines
 }
 
 internal sealed record GameRegistryItem(
@@ -76,6 +77,14 @@ internal sealed class MainMenuScene
             "scenes/UI/Assets/card_crossyroad.png",
             "NEW",
             "Multiplier Highway"
+        ),
+        new(
+            MainMenuAction.PlayMines,
+            "MINES",
+            "ARCADE",
+            "scenes/UI/Assets/card_mines.png",
+            "NEW",
+            "Gems & Bombs"
         ),
     ];
 

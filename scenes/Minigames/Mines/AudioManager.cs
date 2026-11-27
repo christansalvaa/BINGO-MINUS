@@ -1,6 +1,6 @@
 using Raylib_cs;
 
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     /// <summary>
     /// All sound. game_starting.mp3 is a streamed "Music" (loops while loading, plays once on the
@@ -20,7 +20,6 @@ namespace MinesCasino
 
         public static void Init()
         {
-            Raylib.InitAudioDevice();
             _enabled = Raylib.IsAudioDeviceReady();
             if (!_enabled) return;
 
@@ -104,12 +103,18 @@ namespace MinesCasino
         {
             if (!_enabled) return;
 
+            StopMusic();
+            StopBomb();
             if (_flip.FrameCount > 0) Raylib.UnloadSound(_flip);
             if (_diamond.FrameCount > 0) Raylib.UnloadSound(_diamond);
             if (_bomb.FrameCount > 0) Raylib.UnloadSound(_bomb);
             if (_music.FrameCount > 0) Raylib.UnloadMusicStream(_music);
 
-            Raylib.CloseAudioDevice();
+            _flip = default;
+            _diamond = default;
+            _bomb = default;
+            _music = default;
+            _musicActive = false;
             _enabled = false;
         }
     }

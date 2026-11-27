@@ -1,6 +1,6 @@
 using Raylib_cs;
 
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     public sealed record LoadStep(string Label, Action Load);
 
@@ -23,15 +23,13 @@ namespace MinesCasino
         public static void Init()
         {
             UI.LoadFonts(Resolve("Fonts/Poppins-Bold.ttf"));
-            LoadingBg = LoadTex("loading.png");
-
-            Steps.Add(new LoadStep("Shuffling the deck...",     () => { CardBack = LoadTex("card_back.png"); }));
-            Steps.Add(new LoadStep("Polishing the gems...",     () => { Gem = LoadTex("gem.png"); }));
-            Steps.Add(new LoadStep("Arming the bombs...",       () => { Bomb = LoadTex("bomb.png"); }));
-            Steps.Add(new LoadStep("Brewing the smoke...",      () => { Smoke = LoadTex("smoke.png"); }));
-            Steps.Add(new LoadStep("Warming up the red fog...", () => { RedSmoke = LoadTex("smoke_red.png"); }));
-            Steps.Add(new LoadStep("Tuning the sound effects...", () => { AudioManager.LoadEffects(); }));
-            Steps.Add(new LoadStep("Setting the table...",      () => { BoardManager.Build(); }));
+            CardBack = LoadTex("card_back.png");
+            Gem = LoadTex("gem.png");
+            Bomb = LoadTex("bomb.png");
+            Smoke = LoadTex("smoke.png");
+            RedSmoke = LoadTex("smoke_red.png");
+            AudioManager.LoadEffects();
+            BoardManager.Build();
         }
 
         public static void Unload()
@@ -59,9 +57,9 @@ namespace MinesCasino
         /// <summary>Looks next to the .exe first, then in the project folder.</summary>
         public static string Resolve(string relative)
         {
-            string a = Path.Combine(AppContext.BaseDirectory, "Assets", relative);
+            string a = Path.Combine(AppContext.BaseDirectory, "scenes", "Minigames", "Mines", "assets", relative);
             if (File.Exists(a)) return a;
-            string b = Path.Combine(Directory.GetCurrentDirectory(), "Assets", relative);
+            string b = Path.Combine(Directory.GetCurrentDirectory(), "scenes", "Minigames", "Mines", "assets", relative);
             return File.Exists(b) ? b : a;
         }
     }

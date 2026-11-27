@@ -1,7 +1,7 @@
 using System.Numerics;
 using Raylib_cs;
 
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     /// <summary>All drawing (this was "TextureHandler.DrawGame" in the memory game).</summary>
     public static class Renderer
@@ -12,37 +12,33 @@ namespace MinesCasino
 
         public static void Draw()
         {
-            Raylib.BeginDrawing();
             Raylib.ClearBackground(Theme.BgBottom);
 
-            if (GameManager.State == GameState.Loading)
+            // Apply screen shake via rlgl so GameCanvas's outer Camera2D scaling stays intact.
+            Rlgl.PushMatrix();
+            Rlgl.Translatef(W / 2f + Effects.ShakeOffset.X, H / 2f + Effects.ShakeOffset.Y, 0f);
+            Rlgl.Rotatef(Effects.ShakeRotation, 0f, 0f, 1f);
+            Rlgl.Translatef(-W / 2f, -H / 2f, 0f);
+
+            DrawBackground();
+            DrawLeftPanel();
+            DrawTable();
+            DrawRightPanel();
+            Effects.DrawSmoke();
+
+            Rlgl.PopMatrix();
+
+            Effects.DrawRedSmoke(W, H);   // full-screen, not shaken
+
+            if (GameManager.BannerTimer > 0f && GameManager.Banner.Length > 0)
             {
-                LoadingScreen.Draw();
+                float a = Math.Clamp(GameManager.BannerTimer / 0.5f, 0f, 1f);
+                float bw = UI.Measure(GameManager.Banner, 20).X + 36f;
+                Rectangle bannerRect = new((W - bw) / 2f, 66f, bw, 32f);
+                Raylib.DrawRectangleRounded(bannerRect, 0.4f, 8, Theme.Alpha(Theme.Panel, 0.92f * a));
+                UI.RoundedOutline(bannerRect, 0.4f, 1.5f, Theme.Alpha(GameManager.BannerColor, a));
+                UI.TextCenter(GameManager.Banner, W / 2f, 72f, 20, Theme.Alpha(GameManager.BannerColor, a));
             }
-            else
-            {
-                // The camera is how the whole UI shakes: we just move/rotate it a little.
-                Camera2D cam = new Camera2D
-                {
-                    Target = new Vector2(W / 2f, H / 2f),
-                    Offset = new Vector2(W / 2f, H / 2f) + Effects.ShakeOffset,
-                    Rotation = Effects.ShakeRotation,
-                    Zoom = 1f
-                };
-
-                Raylib.BeginMode2D(cam);
-                DrawBackground();
-                DrawTopBar();
-                DrawLeftPanel();
-                DrawTable();
-                DrawRightPanel();
-                Effects.DrawSmoke();
-                Raylib.EndMode2D();
-
-                Effects.DrawRedSmoke(W, H);   // full-screen, not shaken
-            }
-
-            Raylib.EndDrawing();
         }
 
         // ------------------------------------------------------------ background
@@ -60,7 +56,7 @@ namespace MinesCasino
 
         private static void Btn(Rectangle r, string text, bool enabled, float size, bool selected = false)
         {
-            Vector2 m = Raylib.GetMousePosition();
+            Vector2 m = BINGO_MINUS.GameCanvas.GetMousePosition();
             bool hover = enabled && Raylib.CheckCollisionPointRec(m, r);
             Color bg = !enabled ? Theme.ButtonOff : selected ? Theme.Accent : hover ? Theme.ButtonHover : Theme.Button;
             Raylib.DrawRectangleRounded(r, 0.25f, 8, bg);
@@ -79,26 +75,6 @@ namespace MinesCasino
             UI.TextCenter("$", center.X, center.Y - 9f, 15, new Color(120, 80, 0, 255));
         }
 
-        // ---------------------------------------------------------------- top bar
-        private static void DrawTopBar()
-        {
-            UI.Text("MINES", 24, 6, 40, Theme.Gold);
-            float logoW = UI.Measure("MINES", 40).X;
-            UI.Text("CASINO", 24 + logoW + 10, 22, 16, Theme.Muted);
-
-            if (GameManager.BannerTimer > 0f && GameManager.Banner.Length > 0)
-            {
-                float a = Math.Clamp(GameManager.BannerTimer / 0.5f, 0f, 1f);
-                UI.TextCenter(GameManager.Banner, W / 2f, 16, 22, Theme.Alpha(GameManager.BannerColor, a));
-            }
-
-            Rectangle b = Layout.BalancePill;
-            Raylib.DrawRectangleRounded(b, 0.4f, 10, Theme.Panel);
-            UI.RoundedOutline(b, 0.4f, 2f, Theme.PanelEdge);
-            UI.Text("BALANCE", b.X + 16, b.Y + (b.Height - 14f) / 2f, 14, Theme.Muted);
-            UI.TextRight($"${Wallet.Balance:F2}", b.X + b.Width - 16, b.Y + (b.Height - 22f) / 2f, 22, Theme.Green);
-        }
-
         // -------------------------------------------------------------- left panel
         private static void DrawLeftPanel()
         {
@@ -106,7 +82,7 @@ namespace MinesCasino
 
             bool idle = GameManager.State == GameState.Idle;
             bool playing = GameManager.State == GameState.Playing;
-            Vector2 m = Raylib.GetMousePosition();
+            Vector2 m = BINGO_MINUS.GameCanvas.GetMousePosition();
 
             // --- bet amount
             UI.Text("Bet Amount", 40, 94, 14, Theme.Muted);

@@ -1,7 +1,7 @@
 using System.Numerics;
 using Raylib_cs;
 
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     /// <summary>Text + small drawing helpers (fonts are loaded at 4 sizes so text stays sharp).</summary>
     public static class UI

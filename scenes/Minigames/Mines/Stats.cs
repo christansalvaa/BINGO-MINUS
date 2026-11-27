@@ -1,4 +1,4 @@
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     public sealed class RoundResult
     {

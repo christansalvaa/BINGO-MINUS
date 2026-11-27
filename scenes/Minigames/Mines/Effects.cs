@@ -1,7 +1,7 @@
 using System.Numerics;
 using Raylib_cs;
 
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     /// <summary>
     /// Everything that happens when you flip a bomb:

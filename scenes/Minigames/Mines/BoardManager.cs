@@ -1,7 +1,7 @@
 using System.Numerics;
 using Raylib_cs;
 
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     /// <summary>The 5x5 board (this was "TileManager" in the memory game).</summary>
     public static class BoardManager

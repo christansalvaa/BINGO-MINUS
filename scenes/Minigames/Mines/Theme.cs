@@ -1,12 +1,12 @@
 using Raylib_cs;
 
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     /// <summary>Window size + every colour used by the game, in one place.</summary>
     public static class Theme
     {
-        public const int WindowWidth = 1200;
-        public const int WindowHeight = 720;
+        public const int WindowWidth = BINGO_MINUS.GameCanvas.Width;
+        public const int WindowHeight = BINGO_MINUS.GameCanvas.Height;
 
         public static readonly Color BgTop       = new(27, 23, 56, 255);
         public static readonly Color BgBottom    = new(13, 11, 30, 255);

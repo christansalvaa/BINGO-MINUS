@@ -2,11 +2,10 @@ using System.Globalization;
 using System.Numerics;
 using Raylib_cs;
 
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     public enum GameState
     {
-        Loading,   // splash + progress bar
         Idle,      // choose bet / mines, press BET
         Playing,   // round in progress: pick cards or cash out
         BombHit    // 2 second explosion: smoke, shake, red fog (input locked)
@@ -17,7 +16,9 @@ namespace MinesCasino
     {
         public const double MinBet = 1.00;
 
-        public static GameState State = GameState.Loading;
+        private static BINGO_MINUS.CurrencyManager? _currency;
+
+        public static GameState State = GameState.Idle;
 
         public static double Bet = 10.00;
         public static string BetText = "10.00";
@@ -32,22 +33,25 @@ namespace MinesCasino
         public static Color BannerColor = Theme.Text;
         public static float BannerTimer;
 
-        public static void Update()
+        private static double CurrentBalance => _currency != null ? (double)_currency.Balance : 0.0;
+
+        public static void Start(BINGO_MINUS.CurrencyManager currency)
         {
-            float dt = Raylib.GetFrameTime();
+            _currency = currency;
+            State = GameState.Idle;
+            EditingBet = false;
+            BetSelected = false;
+            Banner = "";
+            BannerTimer = 0f;
+            BoardManager.Build();
+            SetBet(Bet);
+        }
+
+        public static void Update(float dt)
+        {
             AudioManager.Update();
 
-            if (State == GameState.Loading)
-            {
-                LoadingScreen.Update(dt);
-                if (LoadingScreen.Done)
-                {
-                    State = GameState.Idle;
-                }
-                return;
-            }
-
-            Vector2 mouse = Raylib.GetMousePosition();
+            Vector2 mouse = BINGO_MINUS.GameCanvas.GetMousePosition();
 
             BoardManager.Update(dt, mouse, State == GameState.Playing);
             Effects.Update(dt);
@@ -81,7 +85,7 @@ namespace MinesCasino
                 if (Hit(Layout.HalfBtn, mouse))   SetBet(Bet / 2.0);
                 if (Hit(Layout.DoubleBtn, mouse)) SetBet(Bet * 2.0);
                 if (Hit(Layout.MinBtn, mouse))    SetBet(MinBet);
-                if (Hit(Layout.MaxBtn, mouse))    SetBet(Wallet.Balance);
+                if (Hit(Layout.MaxBtn, mouse))    SetBet(CurrentBalance);
 
                 if (Hit(Layout.MinesMinus, mouse)) Mines = Math.Max(1, Mines - 1);
                 if (Hit(Layout.MinesPlus, mouse))  Mines = Math.Min(BoardManager.CardCount - 1, Mines + 1);
@@ -139,7 +143,7 @@ namespace MinesCasino
 
         private static void SetBet(double value)
         {
-            double max = Math.Max(MinBet, Wallet.Balance);
+            double max = Math.Max(MinBet, CurrentBalance);
             Bet = Math.Round(Math.Clamp(value, MinBet, max), 2);
             BetText = Bet.ToString("F2", CultureInfo.InvariantCulture);
         }
@@ -174,7 +178,8 @@ namespace MinesCasino
         {
             if (EditingBet) CommitBetText();
 
-            if (!Wallet.TryDeduct(Bet))
+            decimal betAmount = (decimal)Math.Round(Bet, 2);
+            if (_currency == null || betAmount <= 0 || !_currency.TrySpend(betAmount))
             {
                 ShowBanner("Not enough balance", Theme.Red);
                 return;
@@ -231,7 +236,7 @@ namespace MinesCasino
         private static void CashOut()
         {
             double payout = Math.Round(RoundBet * CurrentMultiplier, 2);
-            Wallet.Add(payout);
+            if (payout > 0) _currency?.Add((decimal)payout);
             Stats.Record(RoundBet, payout, CurrentMultiplier);
             BoardManager.ExposeRest(0.25f, 0.025f);
 
@@ -240,13 +245,11 @@ namespace MinesCasino
             ShowBanner($"CASHED OUT  {CurrentMultiplier:F2}x   +${payout - RoundBet:F2}", Theme.Green);
         }
 
-        /// <summary>Keeps the bet valid and refills a broke player so the demo never gets stuck.</summary>
+        /// <summary>Keeps the bet valid after a round finishes.</summary>
         private static bool AfterRound()
         {
-            bool refilled = false;
-            if (Wallet.Balance < MinBet) { Wallet.Reset(); refilled = true; }
             SetBet(Bet);
-            return refilled;
+            return false;
         }
 
         private static void ShowBanner(string text, Color color)

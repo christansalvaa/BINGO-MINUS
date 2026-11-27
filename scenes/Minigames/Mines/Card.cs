@@ -1,6 +1,6 @@
 using Raylib_cs;
 
-namespace MinesCasino
+namespace BINGO_MINUS.Mines
 {
     /// <summary>One card on the 5x5 board (this was "Tile" in the memory game).</summary>
     public class Card
